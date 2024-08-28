@@ -4,55 +4,38 @@
 namespace App\Service\User;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
+use App\Service\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordHasherInterface;
-use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
 
 class RegistrationService
 {
     private $entityManager;
     private $passwordHasher;
-    private $userRepository;
-    private $validator;
+    private ValidationService $validationService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher,
-        UserRepository $userRepository,
-        ValidatorInterface $validator
+        ValidationService $validationService
     ) {
         $this->entityManager = $entityManager;
         $this->passwordHasher = $passwordHasher;
-        $this->userRepository = $userRepository;
-        $this->validator = $validator;
+        $this->validationService = $validationService;
     }
 
-    public function register(string $email, string $plainPassword): array
+    public function register(User $user): array
     {
-        // Sprawdź, czy użytkownik już istnieje
-        if ($this->userRepository->findOneBy(['email' => $email])) {
-            throw new BadCredentialsException('User already exists');
+        try {
+            $this->validationService->validate($user);
+
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+
+            return ['message' => 'User registered successfully'];
+        } catch (Exception $e) {
+            return [];
         }
-
-        // Utwórz nowego użytkownika
-        $user = new User();
-
-        // Walidacja
-        $errors = $this->validator->validate($user);
-        if (count($errors) > 0) {
-            $errorMessages = [];
-            foreach ($errors as $error) {
-                $errorMessages[] = $error->getMessage();
-            }
-            return ['errors' => $errorMessages];
-        }
-
-        // Zapisz użytkownika
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
-
-        return ['message' => 'User registered successfully'];
     }
 }
