@@ -6,6 +6,7 @@ namespace App\Service\User;
 use App\Entity\User;
 use App\Service\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
