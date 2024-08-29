@@ -27,12 +27,13 @@ class FileProcessingService
 
     /**
      * @param UploadedFile[] $files
-     * @return void
-     * @throws ValidationException
+     * @return array<string>
      * @throws IOExceptionInterface
+     * @throws ValidationException
      */
-    public function uploadFiles(array $files)
+    public function uploadFiles(array $files): array
     {
+        $photoPaths = [];
         foreach ($files as $file) {
             $this->validationService->validate($file, [
                 new Assert\File([
@@ -42,8 +43,9 @@ class FileProcessingService
                     'mimeTypesMessage' => 'Please upload a valid JPEG or PNG file.',
                 ]),
             ]);
-            $this->saveFile($file);
+            $photoPaths[] =$this->saveFile($file);
         }
+        return $photoPaths;
     }
 
     /**
@@ -51,14 +53,25 @@ class FileProcessingService
      */
     private function saveFile(UploadedFile $file): string
     {
-        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeFilename = $this->generateUniqueFilename($originalFilename);
-        $newFilename = $safeFilename . '.' . $file->guessExtension();
-        $uniqueDirName = uniqid();
-        $this->directoryManager->ensureDirectoryExists(self::PUBLIC_PHOTOS_DIR.$uniqueDirName);
+        if (null === $file->guessExtension()) {
+            throw new \Exception();
+        }
 
+        $uniqueDirName = uniqid();
+        $destination = self::PUBLIC_PHOTOS_DIR.$uniqueDirName;
+        $uniqueFileName = $this->createFileName($file->getFilename(), $file->guessExtension());
+        $this->directoryManager->ensureDirectoryExists($destination);
+        $file->move($destination);
+
+        return  $destination.'/'.$uniqueFileName;
     }
 
+    private function createFileName(string $fileName, string $extension): string
+    {
+        $originalFilename = pathinfo($fileName, PATHINFO_FILENAME);
+        $safeFilename = $this->generateUniqueFilename();
+        return $safeFilename . '.' . $extension;
+    }
     private function generateUniqueFileName(): string
     {
         return self::NAME_PREFIX.uniqid();

@@ -37,12 +37,10 @@ class DirectoryManager
      * @return string
      * @throws IOExceptionInterface
      */
-    public function ensureDirectoryExists(string $directoryPath): string
+    public function ensureDirectoryExists(string $directoryPath): void
     {
         if (!$this->directoryExists($directoryPath)) {
             $this->createDirectory($directoryPath);
         }
-
-        return $directoryPath;
     }
 }
