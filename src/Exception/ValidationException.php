@@ -1,6 +1,6 @@
 <?php
 
-namespace App\CustomExceptions;
+namespace App\Exception;
 
 use Exception;
 use Symfony\Component\Validator\ConstraintViolationListInterface;

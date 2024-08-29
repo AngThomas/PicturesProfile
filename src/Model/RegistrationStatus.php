@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use JMS\Serializer\Annotation as Serializer;
 class RegistrationStatus
 {
     const SUCCESS = 'User registered successfully!';
@@ -10,7 +11,9 @@ class RegistrationStatus
     private bool $success;
     private string $description;
     public function __construct(
+        #[Serializer\since(0.1)]
         bool $success,
+        #[Serializer\since(0.1)]
         string $description
     )
     {

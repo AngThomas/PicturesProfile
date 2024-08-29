@@ -3,6 +3,7 @@
 
 namespace App\Service\User;
 
+use App\CustomExceptions\ValidationException;
 use App\Entity\User;
 use App\Service\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,11 +27,14 @@ class RegistrationService
         $this->validationService = $validationService;
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function register(User $user): bool
     {
         $this->validationService->validate($user);
         $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->entityManager->flush(); //TODO: finish hashing
         return true;
     }
 }
