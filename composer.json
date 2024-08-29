@@ -9,6 +9,7 @@
         "ext-iconv": "*",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^2.19",
+        "jms/serializer": "^3.30",
         "lexik/jwt-authentication-bundle": "^2.21",
         "symfony/console": "5.4.*",
         "symfony/dotenv": "5.4.*",
