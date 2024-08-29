@@ -3,20 +3,20 @@
 namespace App\Handler;
 
 use App\DTO\UserDTO;
-use App\Service\FileUploadService;
+use App\Service\FileProcessingService;
 use App\Service\User\RegistrationService;
 use App\Service\User\UserManager;
 use Symfony\Component\HttpFoundation\Request;
 
-class RegistrationHandler
+class RegistrationProcessHandler
 {
     private UserManager $userManager;
     private RegistrationService $registrationService;
-    private FileUploadService $fileUploadService;
+    private FileProcessingService $fileUploadService;
     public function __construct(
         UserManager $userManager,
         RegistrationService $registrationService,
-        FileUploadService $fileUploadService
+        FileProcessingService $fileUploadService
     )
     {
         $this->userManager = $userManager;
@@ -24,11 +24,10 @@ class RegistrationHandler
         $this->fileUploadService = $fileUploadService;
     }
 
-    public function handle(Request $request)
+    public function handle(UserDTO $userDTO)
     {
-        $userDTO = UserDTO::fromRequest($request);
         $userEntity = $this->userManager->makeNewUser($userDTO);
-        $this->registrationService->register($userEntity);
         $this->fileUploadService->uploadFiles();
+        $this->registrationService->register($userEntity);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\DTO;
 
 
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 
 class UserDTO
@@ -14,13 +15,22 @@ class UserDTO
     private bool $active;
     private string $avatar;
 
+    /**
+     * @var UploadedFile[] $files
+     */
+    private array $files;
+
+    /**
+     * @param UploadedFile[] $files
+     */
     public function __construct(
         string $email,
         string $password,
         string $firstName,
         string $lastName,
         bool $active,
-        string $avatar
+        string $avatar,
+        array $files
     )
     {
         $this->email = $email;
@@ -29,6 +39,7 @@ class UserDTO
         $this->lastName = $lastName;
         $this->active = $active;
         $this->avatar = $avatar;
+        $this->files = $files;
     }
 
     public function getEmail(): string
@@ -36,9 +47,11 @@ class UserDTO
         return $this->email;
     }
 
-    public function setEmail(string $email): void
+    public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
     }
 
     public function getPassword(): string
@@ -46,9 +59,11 @@ class UserDTO
         return $this->password;
     }
 
-    public function setPassword(string $password): void
+    public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
     }
 
     public function getFirstName(): string
@@ -56,9 +71,11 @@ class UserDTO
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): void
+    public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
+
+        return $this;
     }
 
     public function getLastName(): string
@@ -66,9 +83,11 @@ class UserDTO
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName): void
+    public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
+
+        return $this;
     }
 
     public function isActive(): bool
@@ -76,9 +95,11 @@ class UserDTO
         return $this->active;
     }
 
-    public function setActive(bool $active): void
+    public function setActive(bool $active): self
     {
         $this->active = $active;
+
+        return $this;
     }
 
     public function getAvatar(): string
@@ -86,10 +107,30 @@ class UserDTO
         return $this->avatar;
     }
 
-    public function setAvatar(string $avatar): void
+    public function setAvatar(string $avatar): self
     {
         $this->avatar = $avatar;
+
+        return $this;
     }
+
+    public function getFiles(): array
+    {
+        return $this->files;
+    }
+
+
+    /**
+     * @param UploadedFile[] $files
+     * @return $this
+     */
+    public function setFiles(array $files): self
+    {
+        $this->files = $files;
+
+        return $this;
+    }
+
 
     public static function fromRequest(Request $request): self
     {
@@ -99,7 +140,8 @@ class UserDTO
             $request->request->get('firstName'),
             $request->request->get('lastName'),
             $request->request->get('active'),
-            $request->request->get('avatar')
+            $request->request->get('avatar'),
+            $request->files->all()
         );
     }
 

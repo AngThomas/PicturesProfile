@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\CustomExceptions\ValidationException;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -15,17 +16,15 @@ class ValidationService
         $this->validator = $validator;
     }
 
-    public function validate(mixed $value): void
+    /**
+     * @throws ValidationException
+     */
+    public function validate(mixed $value, ?array $constraints = null): void
     {
-        $violatedConstraintsMessages = [];
-        $errors = $this->validator->validate($value);
+        $violations = $this->validator->validate($value, $constraints);
 
-        foreach ($errors as $error) {
-            $violatedConstraintsMessages[] = $error->getMessage();
-        }
-
-        if (!empty($violatedConstraintsMessages)) {
-            throw new ValidationFailedException($value);
+        if (count($violations) > 0) {
+            throw new ValidationException($violations);
         }
     }
 }
