@@ -14,7 +14,7 @@ class TokenService
         $this->jwtManager = $jwtManager;
     }
 
-    public function createToken(UserInterface $user): string
+    public function issueToken(UserInterface $user): string
     {
         return $this->jwtManager->create($user);
     }
