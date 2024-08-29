@@ -2,10 +2,12 @@
 
 namespace App\Handler;
 
+use App\CustomExceptions\ValidationException;
 use App\DTO\UserDTO;
 use App\Service\FileProcessingService;
 use App\Service\User\RegistrationService;
 use App\Service\User\UserManager;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class RegistrationProcessHandler
@@ -24,10 +26,14 @@ class RegistrationProcessHandler
         $this->fileUploadService = $fileUploadService;
     }
 
+    /**
+     * @throws ValidationException
+     * @throws IOExceptionInterface
+     */
     public function handle(UserDTO $userDTO)
     {
+        $this->fileUploadService->uploadFiles($userDTO->getFiles());
         $userEntity = $this->userManager->makeNewUser($userDTO);
-        $this->fileUploadService->uploadFiles();
         $this->registrationService->register($userEntity);
     }
 }
