@@ -26,17 +26,11 @@ class RegistrationService
         $this->validationService = $validationService;
     }
 
-    public function register(User $user): array
+    public function register(User $user): bool
     {
-        try {
-            $this->validationService->validate($user);
-
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
-
-            return ['message' => 'User registered successfully'];
-        } catch (Exception $e) {
-            return [];
-        }
+        $this->validationService->validate($user);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+        return true;
     }
 }
