@@ -5,7 +5,8 @@ namespace App\Controller;
 use App\DTO\UserDTO;
 use App\Handler\RegistrationProcessHandler;
 use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
+
+use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,10 +18,10 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends AbstractController
 {
     private RegistrationProcessHandler $registrationProcessHandler;
-    private Serializer $serializer;
+    private SerializerInterface $serializer;
     public function __construct(
         RegistrationProcessHandler $registrationProcessHandler,
-        Serializer $serializer
+        SerializerInterface $serializer
     )
     {
         $this->registrationProcessHandler = $registrationProcessHandler;
