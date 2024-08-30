@@ -7,7 +7,8 @@ use App\DTO\UserDTO;
 use App\Handler\LoginProcessHandler;
 use App\Handler\RegistrationProcessHandler;
 use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
+
+use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,9 +19,9 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api/users')]
 class UserController extends AbstractController
 {
-    private Serializer $serializer;
+    private SerializerInterface $serializer;
     public function __construct(
-        Serializer $serializer
+        SerializerInterface $serializer
     )
     {
         $this->serializer = $serializer;

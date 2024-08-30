@@ -3,22 +3,22 @@
 namespace App\Handler;
 
 use App\DTO\CredentialsDTO;
-use App\Service\TokenService;
+use App\Service\TokenManager;
 use App\Service\User\LoginService;
 
 class LoginProcessHandler
 {
 
     private LoginService $loginService;
-    private TokenService $tokenService;
+    private TokenManager $tokenManager;
 
     public function __construct(
         LoginService $loginService,
-        TokenService $tokenService
+        TokenManager $tokenManager
     )
     {
         $this->loginService = $loginService;
-        $this->tokenService = $tokenService;
+        $this->tokenService = $tokenManager;
     }
     public function handle(CredentialsDTO $credentialsDTO)
     {
