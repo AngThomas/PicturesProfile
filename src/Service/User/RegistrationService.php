@@ -3,8 +3,9 @@
 
 namespace App\Service\User;
 
-use App\CustomExceptions\ValidationException;
+
 use App\Entity\User;
+use App\Exception\ValidationException;
 use App\Service\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;

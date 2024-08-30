@@ -2,11 +2,12 @@
 
 namespace App\Service\User;
 
+use App\DTO\CredentialsDTO;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -29,17 +30,13 @@ class LoginService
         $this->entityManager = $entityManager;
     }
 
-    public function login(string $email, string $plainPassword): array
+    public function login(CredentialsDTO $credentialsDTO): UserInterface
     {
-        $user = $this->userRepository->findOneBy(['email' => $email]);
-
-        if (!$user || !$this->passwordHasher->isPasswordValid($user, $plainPassword)) {
+        $user = $this->userRepository->findOneBy(['email' => $credentialsDTO->getEmail()]);
+        if (!$user || !$this->passwordHasher->isPasswordValid($user, $credentialsDTO->getPassword())) {
             throw new BadCredentialsException('Invalid email or password.');
         }
 
-        // Generowanie tokenu JWT
-        $token = $this->jwtManager->create($user);
-
-        return ['token' => $token];
+        return $user;
     }
 }
