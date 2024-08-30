@@ -53,15 +53,14 @@ class TokenAuthenticator extends AbstractAuthenticator
         $tokenDetails = $this->tokenManager->getTokenDetails($token);
         $newToken = $this->tokenManager->refreshToken($tokenDetails);
         $response = $request->attributes->get('_response');
-        $response->headers->set('X-Authorization-Token', $newToken);
         if (!$response instanceof Response) {
-            return new Response();
+            return new Response(json_encode(['error' =>'Not Found']), Response::HTTP_NOT_FOUND);
         }
         return $response;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        // TODO: Implement onAuthenticationFailure() method.
+        return new Response (json_encode(['error' =>'Unathorized']), Response::HTTP_UNAUTHORIZED);
     }
 }
