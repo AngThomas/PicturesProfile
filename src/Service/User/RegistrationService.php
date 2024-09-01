@@ -34,6 +34,7 @@ class RegistrationService
     public function register(User $user): bool
     {
         $this->validationService->validate($user);
+        $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
         $this->entityManager->persist($user);
         $this->entityManager->flush(); //TODO: finish hashing
         return true;

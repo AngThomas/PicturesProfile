@@ -34,7 +34,7 @@ class RegistrationProcessHandler
     public function handle(UserDTO $userDTO): RegistrationStatus
     {
         try {
-            $this->fileProcessingService->uploadFiles($userDTO->getFiles());
+//            $this->fileProcessingService->uploadFiles($userDTO->getFiles());
             $userEntity = $this->userManager->makeNewUser($userDTO);
             $result = $this->registrationService->register($userEntity);
 

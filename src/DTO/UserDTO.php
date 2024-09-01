@@ -13,7 +13,7 @@ class UserDTO
     private string $firstName;
     private string $lastName;
     private bool $active;
-    private string $avatar;
+    private ?string $avatar;
 
     /**
      * @var UploadedFile[] $files
@@ -29,7 +29,7 @@ class UserDTO
         string $firstName,
         string $lastName,
         bool $active,
-        string $avatar,
+        ?string $avatar,
         array $files
     )
     {
@@ -102,12 +102,12 @@ class UserDTO
         return $this;
     }
 
-    public function getAvatar(): string
+    public function getAvatar(): ?string
     {
         return $this->avatar;
     }
 
-    public function setAvatar(string $avatar): self
+    public function setAvatar(?string $avatar): self
     {
         $this->avatar = $avatar;
 

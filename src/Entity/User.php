@@ -7,6 +7,9 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
+use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -58,8 +61,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: 'created_at')]
     private DateTimeImmutable $createdAt;
 
-    #[ORM\Column('updated_at')]
-    private DateTimeImmutable $updatedAt;
+    #[ORM\Column('updated_at', nullable: true)]
+    private ?DateTimeImmutable $updatedAt;
 
     public function __construct(
         string $email,
@@ -67,7 +70,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         string $firstName,
         string $lastName,
         bool $active,
-        string $avatar
+        string $avatar,
+        ?DateTimeInterface $updatedAt = null
     )
     {
         $this->email = $email;
@@ -78,6 +82,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->active = $active;
         $this->avatar = $avatar;
         $this->photos = new ArrayCollection();
+        $this->createdAt = new DateTimeImmutable();
+        $this->updatedAt = $updatedAt;
     }
 
     public function getId(): int
@@ -90,7 +96,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(string $email): self
     {
         $this->email = $email;
 
@@ -103,7 +109,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(string $password): self
     {
         $this->password = $password;
 
@@ -119,7 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->photos;
     }
 
-    public function addPhoto(Photo $photo): static
+    public function addPhoto(Photo $photo): self
     {
         if (!$this->photos->contains($photo)) {
             $this->photos->add($photo);
@@ -129,7 +135,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removePhoto(Photo $photo): static
+    public function removePhoto(Photo $photo): self
     {
         if ($this->photos->removeElement($photo)) {
             // set the owning side to null (unless already changed)
@@ -146,7 +152,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): static
+    public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
 
@@ -158,7 +164,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName): static
+    public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
 
@@ -179,7 +185,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->active;
     }
 
-    public function setActive(bool $active): static
+    public function setActive(bool $active): self
     {
         $this->active = $active;
 
@@ -191,7 +197,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->avatar;
     }
 
-    public function setAvatar(string $avatar): static
+    public function setAvatar(string $avatar): self
     {
         $this->avatar = $avatar;
 
@@ -203,19 +209,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): static
+    public function setCreatedAt(?DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): DateTimeImmutable
+    public function getUpdatedAt(): ?DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTimeImmutable $updatedAt): static
+    public function setUpdatedAt(DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
