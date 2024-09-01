@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\DTO\UserDTO;
 use App\Handler\RegistrationProcessHandler;
+use App\Service\User\UserManager;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,15 +29,19 @@ class UserController extends AbstractController
     public function register(Request $request, RegistrationProcessHandler $registrationProcessHandler): JsonResponse
     {
         $registrationStatus = $registrationProcessHandler->handle(UserDTO::fromRequest($request));
-        return new JsonResponse(
+        return JsonResponse::fromJsonString(
             $this->serializer->serialize($registrationStatus, 'json', SerializationContext::create()),
             $registrationStatus->isSuccess() ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR
         );
     }
 
-    #[Route('/me', name: 'app_user_details')]
-    public function userDetails(): JsonResponse
+    #[Route('/me', name: 'app_user_details', methods: ['GET'])]
+    public function userDetails(UserManager $userManager): JsonResponse
     {
-        return new JsonResponse('all ok.', Response::HTTP_OK);
+        $userModel = $userManager->getUserDetails($this->getUser());
+        return JsonResponse::fromJsonString(
+            $this->serializer->serialize($userModel, 'json', SerializationContext::create()),
+            Response::HTTP_OK
+        );
     }
 }

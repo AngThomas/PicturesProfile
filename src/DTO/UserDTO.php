@@ -3,6 +3,8 @@
 namespace App\DTO;
 
 
+use App\Entity\User;
+use App\Model\PhotoDetails;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -14,6 +16,8 @@ class UserDTO
     private string $lastName;
     private bool $active;
     private ?string $avatar;
+
+    private array $photos;
 
     /**
      * @var UploadedFile[] $files
@@ -29,8 +33,9 @@ class UserDTO
         string $firstName,
         string $lastName,
         bool $active,
-        ?string $avatar,
-        array $files
+        array $files,
+        string $avatar = 'public/photos/default/dummy.jpg',
+        array $photos = []
     )
     {
         $this->email = $email;
@@ -39,6 +44,8 @@ class UserDTO
         $this->lastName = $lastName;
         $this->active = $active;
         $this->avatar = $avatar;
+        $this->photos = $photos;
+
         $this->files = $files;
     }
 
@@ -114,6 +121,26 @@ class UserDTO
         return $this;
     }
 
+    /**
+     * @return PhotoDetails[] $photos
+     */
+    public function getPhotos(): array
+    {
+        return $this->photos;
+    }
+
+    public function addPhoto(PhotoDetails $photo)
+    {
+        $this->photos[] = $photo;
+    }
+    public function setPhotos(array $photos): void
+    {
+        foreach ($photos as $photo) {
+            $this->photos[] = $photo;
+        }
+    }
+
+
     public function getFiles(): array
     {
         return $this->files;
@@ -140,10 +167,8 @@ class UserDTO
             $request->request->get('firstName'),
             $request->request->get('lastName'),
             $request->request->get('active'),
+            $request->files->all(),
             $request->request->get('avatar'),
-            $request->files->all()
         );
     }
-
-
 }

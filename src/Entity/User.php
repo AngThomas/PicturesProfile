@@ -4,13 +4,9 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use DateTimeImmutable;
-use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
-use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -29,16 +25,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank()]
     private string $email;
 
-    /**
-     * @var string The hashed password
-     */
-    #[ORM\Column]
+
     #[Assert\Length(min: 6, max: 50)]
     #[Assert\Regex(pattern: '/\d/', message: 'Password must contain at least one number.')]
     #[Assert\NotBlank()]
+    private ?string $plainPassword;
+
+    #[ORM\Column]
     private string $password;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Photo::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Photo::class, cascade: ['persist'])]
     private Collection $photos;
 
     #[ORM\Column(length: 25, name: 'first_name')]
@@ -59,11 +55,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private string $avatar;
 
-    #[ORM\Column(name: 'created_at')]
-    private DateTimeInterface $createdAt;
+    #[ORM\Column(name: 'created_at', generated: 'INSERT')]
+    private DateTimeImmutable $createdAt;
 
-    #[ORM\Column('updated_at', nullable: true)]
-    private ?DateTimeInterface $updatedAt;
+    #[ORM\Column('updated_at', generated: 'ALWAYS')]
+    private DateTimeImmutable $updatedAt;
 
     public function __construct(
         string $email,
@@ -71,12 +67,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         string $firstName,
         string $lastName,
         bool $active,
-        string $avatar,
-        ?DateTimeInterface $updatedAt = null
+        string $avatar
     )
     {
         $this->email = $email;
-        $this->password = $password;
+        $this->plainPassword = $password;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->fullName = "$firstName $lastName";
@@ -84,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->avatar = $avatar;
         $this->photos = new ArrayCollection();
         $this->createdAt = new DateTimeImmutable();
-        $this->updatedAt = $updatedAt;
+        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function getId(): int
@@ -102,6 +97,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->email = $email;
 
         return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): void
+    {
+        $this->plainPassword = $plainPassword;
     }
 
 
@@ -134,6 +139,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function setPhotos(array $photos)
+    {
+        foreach ($photos as $photo) {
+            $this->addPhoto($photo);
+        }
     }
 
     public function removePhoto(Photo $photo): self
@@ -205,24 +217,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(?DateTimeInterface $createdAt): self
+    public function setCreatedAt(DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?DateTimeInterface
+    public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self
+    public function setUpdatedAt(DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
@@ -246,8 +258,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->plainPassword = null;
     }
 
     public function getUsername(): string

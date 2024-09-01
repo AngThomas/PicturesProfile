@@ -25,21 +25,21 @@ class Photo
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\Column(name: 'created_at')]
+    #[ORM\Column(name: 'created_at', generated: 'ALWAYS')]
     private DateTimeImmutable $createdAt;
 
-    #[ORM\Column(name: 'updated_at')]
-    private DateTimeImmutable $updatedAt;
+    #[ORM\Column(name: 'updated_at', generated: 'ALWAYS')]
+    private ?DateTimeImmutable $updatedAt;
 
     public function __construct(
         string $name,
         string $url,
-        User $user
     )
     {
         $this->name = $name;
         $this->url = $url;
-        $this->user = $user;
+        $this->createdAt = new DateTimeImmutable();
+        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -83,24 +83,24 @@ class Photo
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function setCreatedAt(DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    public function setUpdatedAt(?DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
 

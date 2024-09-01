@@ -2,17 +2,16 @@
 
 namespace App\Service;
 
-use App\CustomExceptions\ValidationException;
+use App\Exception\ValidationException;
+use App\Model\PhotoDetails;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class FileProcessingService
 {
+    const PUBLIC_PHOTOS_DIR = 'photos/';
 
-    const PUBLIC_PHOTOS_DIR = 'public/photos/';
-    const NAME_PREFIX = 'usrPic';
     private ValidationService $validationService;
     private DirectoryManager $directoryManager;
 
@@ -27,53 +26,80 @@ class FileProcessingService
 
     /**
      * @param UploadedFile[] $files
+     * @param string|null $targetDir
      * @return array<string>
      * @throws IOExceptionInterface
      * @throws ValidationException
      */
-    public function uploadFiles(array $files): array
+    public function uploadFiles(array $files, ?string $targetDir = null): array
     {
+
+        $targetDir = $this->setSavePath($targetDir);
+
         $photoPaths = [];
         foreach ($files as $file) {
-            $this->validationService->validate($file, [
-                new Assert\File([
-                    'maxSize' => '2M',
-                    'maxSizeMessage' => 'Maximum size allowed (2MB per file) exceeded.',
-                    'mimeTypes' => ['image/jpeg', 'image/png'],
-                    'mimeTypesMessage' => 'Please upload a valid JPEG or PNG file.',
-                ]),
-            ]);
-            $photoPaths[] =$this->saveFile($file);
+            $this->validateFile($file);
+            $photoPaths[] = $this->saveFile($file, $targetDir);
         }
+
         return $photoPaths;
     }
 
-    /**
-     * @throws IOExceptionInterface
-     */
-    private function saveFile(UploadedFile $file): string
+    public function setSavePath(?string $targetDir = null): string
     {
-        if (null === $file->guessExtension()) {
-            throw new \Exception();
+        if ($targetDir === null) {
+            $uniqueDirName = uniqid();
+            $targetDir = self::PUBLIC_PHOTOS_DIR . $uniqueDirName;
         }
 
-        $uniqueDirName = uniqid();
-        $destination = self::PUBLIC_PHOTOS_DIR.$uniqueDirName;
-        $uniqueFileName = $this->createFileName($file->getFilename(), $file->guessExtension());
-        $this->directoryManager->ensureDirectoryExists($destination);
-        $file->move($destination);
+        $this->directoryManager->setDirectoryPath($targetDir);
+        $this->directoryManager->ensureDirectoryExists($targetDir);
+        return $targetDir;
+    }
 
-        return  $destination.'/'.$uniqueFileName;
+    /**
+     * @throws IOExceptionInterface|\Exception
+     */
+    public function saveFile(UploadedFile $file, string $destination): PhotoDetails
+    {
+        if (null === $file->guessExtension()) {
+            throw new \Exception('Cannot determine file extension.');
+        }
+
+        $uniqueFileName = $this->createFileName($file->getClientOriginalName(), $file->guessExtension());
+
+        $file->move($destination, $uniqueFileName);
+
+        return new PhotoDetails(
+            $uniqueFileName,
+            $destination . '/' . $uniqueFileName
+        );
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function validateFile(UploadedFile $file): void
+    {
+        $this->validationService->validate($file, [
+            new Assert\File([
+                'maxSize' => '2M',
+                'maxSizeMessage' => 'Maximum size allowed (2MB per file) exceeded.',
+                'mimeTypes' => ['image/jpeg', 'image/png'],
+                'mimeTypesMessage' => 'Please upload a valid JPEG or PNG file.',
+            ]),
+        ]);
     }
 
     private function createFileName(string $fileName, string $extension): string
     {
         $originalFilename = pathinfo($fileName, PATHINFO_FILENAME);
-        $safeFilename = $this->generateUniqueFilename();
+        $safeFilename = $this->generateUniqueFileName($originalFilename);
         return $safeFilename . '.' . $extension;
     }
-    private function generateUniqueFileName(): string
+
+    private function generateUniqueFileName(string $originalFileName): string
     {
-        return self::NAME_PREFIX.uniqid();
+        return $originalFileName . uniqid();
     }
 }
