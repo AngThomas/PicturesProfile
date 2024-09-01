@@ -2,14 +2,15 @@
 
 namespace App\Handler;
 
-use App\CustomExceptions\ValidationException;
+
 use App\DTO\UserDTO;
+use App\Exception\ValidationException;
 use App\Model\RegistrationStatus;
 use App\Service\FileProcessingService;
 use App\Service\User\RegistrationService;
 use App\Service\User\UserManager;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\HttpFoundation\Request;
+
 
 class RegistrationProcessHandler
 {
