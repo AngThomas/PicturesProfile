@@ -2,9 +2,7 @@
 
 namespace App\Controller;
 
-use App\DTO\CredentialsDTO;
 use App\DTO\UserDTO;
-use App\Handler\LoginProcessHandler;
 use App\Handler\RegistrationProcessHandler;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
