@@ -4,6 +4,7 @@
 namespace App\Service\User;
 
 
+use App\DTO\UserDTO;
 use App\Entity\User;
 use App\Exception\ValidationException;
 use App\Service\ValidationService;
@@ -14,16 +15,16 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class RegistrationService
 {
-    private $entityManager;
-    private $passwordHasher;
+    private UserManager $userManager;
+    private UserPasswordHasherInterface $passwordHasher;
     private ValidationService $validationService;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
+        UserManager $userManager,
         UserPasswordHasherInterface $passwordHasher,
         ValidationService $validationService
     ) {
-        $this->entityManager = $entityManager;
+        $this->userManager = $userManager;
         $this->passwordHasher = $passwordHasher;
         $this->validationService = $validationService;
     }
@@ -31,12 +32,14 @@ class RegistrationService
     /**
      * @throws ValidationException
      */
-    public function register(User $user): bool
+    public function register(UserDTO $userDTO): bool
     {
+        $this->userManager->saveUserPhotos($userDTO);
+        $user = $this->userManager->makeNewUser($userDTO);
         $this->validationService->validate($user);
-        $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
-        $this->entityManager->persist($user);
-        $this->entityManager->flush(); //TODO: finish hashing
+        $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPlainPassword()));
+        $user->eraseCredentials();
+        $this->userManager->saveNewUser($user);
         return true;
     }
 }

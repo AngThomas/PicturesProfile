@@ -3,32 +3,42 @@
 namespace App\Service\User;
 
 use App\DTO\UserDTO;
+use App\Entity\Photo;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\FileProcessingService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\UserProviderFactoryInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UserManager
 {
+    private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
-    private UserProviderInterface $userProvider;
+    private FileProcessingService $fileProcessingService;
     public function __construct(
+        EntityManagerInterface $entityManager,
         UserRepository $userRepository,
-        UserProviderInterface $userProvider
+        FileProcessingService $fileProcessingService
     )
     {
+        $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
-        $this->userProvider = $userProvider;
+        $this->fileProcessingService = $fileProcessingService;
     }
     public function makeNewUser(UserDTO $userDTO): User
     {
+        $photoEntities = [];
         if ($this->userRepository->findOneBy(['email' => $userDTO->getEmail()]))
         {
             throw new BadCredentialsException('User already exists');
         }
-        return new User(
+
+
+        $user = new User(
             $userDTO->getEmail(),
             $userDTO->getPassword(),
             $userDTO->getFirstName(),
@@ -36,10 +46,55 @@ class UserManager
             $userDTO->isActive(),
             $userDTO->getAvatar()
         );
+
+        foreach ($userDTO->getPhotos() as $photo)
+        {
+            $photoEntities[] = new Photo(
+                $photo->getName(),
+                $photo->getUrl()
+            );
+
+        }
+
+        $user->setPhotos($photoEntities);
+
+        return $user;
     }
 
-    public function getUserByEmail(string $email): UserInterface
+    public function saveNewUser(User $user): void
     {
-        return $this->userProvider->loadUserByIdentifier($email);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
+
+    public function saveUserPhotos(UserDto $userDTO): void
+    {
+        $files = $userDTO->getFiles();
+
+        if (empty($files)) {
+            return;
+        }
+
+        foreach ($files as $index => $file) {
+            if ('avatar' === $file->getClientOriginalName()) {
+                $savePath = $this->saveUserAvatar($file, $userDTO);
+                unset($files[$index]);
+                break;
+            }
+        }
+        $savePath = $this->fileProcessingService->setSavePath();
+
+        $photos = $this->fileProcessingService->uploadFiles($files, $savePath);
+        $userDTO->setPhotos($photos);
+    }
+
+    private function saveUserAvatar(UploadedFile $avatar, UserDTO $userDTO): string
+    {
+        $this->fileProcessingService->validateFile($avatar);
+        $savePath = $this->fileProcessingService->setSavePath();
+        $avatarPhoto = $this->fileProcessingService->saveFile($avatar, $savePath);
+        $userDTO->setAvatar($avatarPhoto->getUrl());
+        $userDTO->addPhoto($avatarPhoto);
+        return $savePath;
     }
 }

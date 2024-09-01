@@ -2,8 +2,7 @@
 
 namespace App\Service;
 
-use App\CustomExceptions\ValidationException;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
+use App\Exception\ValidationException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ValidationService

@@ -7,7 +7,7 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 class DirectoryManager
 {
-    private string $baseDirectory;
+    private string $directoryPath;
     private Filesystem $filesystem;
 
     public function __construct(
@@ -15,6 +15,16 @@ class DirectoryManager
     )
     {
         $this->filesystem = $filesystem;
+    }
+
+    public function setDirectoryPath(string $directoryPath): void
+    {
+        $this->directoryPath = $directoryPath;
+    }
+
+    public function getDirectoryPath(): string
+    {
+        return $this->directoryPath;
     }
     public function directoryExists(string $directoryPath): bool
     {
