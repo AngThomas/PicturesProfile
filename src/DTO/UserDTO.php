@@ -3,7 +3,8 @@
 namespace App\DTO;
 
 
-use App\Model\Photo;
+use App\Entity\User;
+use App\Model\PhotoDetails;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -121,14 +122,14 @@ class UserDTO
     }
 
     /**
-     * @return Photo[] $photos
+     * @return PhotoDetails[] $photos
      */
     public function getPhotos(): array
     {
         return $this->photos;
     }
 
-    public function addPhoto(Photo $photo)
+    public function addPhoto(PhotoDetails $photo)
     {
         $this->photos[] = $photo;
     }
@@ -170,6 +171,4 @@ class UserDTO
             $request->request->get('avatar'),
         );
     }
-
-
 }

@@ -5,9 +5,12 @@ namespace App\Service\User;
 use App\DTO\UserDTO;
 use App\Entity\Photo;
 use App\Entity\User;
+use App\Model\PhotoDetails;
+use App\Model\UserDetails;
 use App\Repository\UserRepository;
 use App\Service\FileProcessingService;
 use Doctrine\ORM\EntityManagerInterface;
+use mysql_xdevapi\Exception;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\UserProviderFactoryInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
@@ -88,6 +91,33 @@ class UserManager
         $userDTO->setPhotos($photos);
     }
 
+    public function getUserDetails(User $user): UserDetails
+    {
+        $photos = $user->getPhotos();
+        $modelPhotos = [];
+        if (isset($photos)) {
+            $modelPhotos = $this->convertToModels($photos->toArray());
+        }
+        return new UserDetails(
+            $user->getEmail(),
+            $user->getFullName(),
+            $user->isActive(),
+            $user->getAvatar(),
+            $modelPhotos
+        );
+    }
+
+    private function convertToModels(array $photos): array
+    {
+        $modelPhotos = [];
+        foreach ($photos as $photo) {
+            $modelPhotos[] = new PhotoDetails(
+                $photo->getName(),
+                $photo->getUrl()
+            );
+        }
+        return $modelPhotos;
+    }
     private function saveUserAvatar(UploadedFile $avatar, UserDTO $userDTO): string
     {
         $this->fileProcessingService->validateFile($avatar);

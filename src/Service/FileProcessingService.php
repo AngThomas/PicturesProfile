@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Exception\ValidationException;
-use App\Model\Photo;
+use App\Model\PhotoDetails;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -60,7 +60,7 @@ class FileProcessingService
     /**
      * @throws IOExceptionInterface|\Exception
      */
-    public function saveFile(UploadedFile $file, string $destination): Photo
+    public function saveFile(UploadedFile $file, string $destination): PhotoDetails
     {
         if (null === $file->guessExtension()) {
             throw new \Exception('Cannot determine file extension.');
@@ -70,7 +70,7 @@ class FileProcessingService
 
         $file->move($destination, $uniqueFileName);
 
-        return new Photo(
+        return new PhotoDetails(
             $uniqueFileName,
             $destination . '/' . $uniqueFileName
         );

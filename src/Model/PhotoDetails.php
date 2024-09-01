@@ -3,7 +3,7 @@
 namespace App\Model;
 
 use JMS\Serializer\Annotation as Serializer;
-class Photo
+class PhotoDetails
 {
     private string $name;
     private string $url;
