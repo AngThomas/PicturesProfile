@@ -44,14 +44,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $qb = $this->createQueryBuilder('u');
 
+        $startOfDay = (clone $date)->setTime(0, 0, 0);
+        $endOfDay = (clone $date)->setTime(23, 59, 59);
+
         $qb->select('u.email')
             ->where('u.active = :active')
-            ->andWhere('DATE(u.createdAt) = :date')
+            ->andWhere('u.createdAt BETWEEN :start AND :end')
             ->setParameter('active', true)
-            ->setParameter('date', $date->format('Y-m-d'))
+            ->setParameter('start', $startOfDay)
+            ->setParameter('end', $endOfDay)
             ->setFirstResult(($page - 1) * $batchSize)
             ->setMaxResults($batchSize);
 
         return $qb->getQuery()->getArrayResult();
     }
+
 }
