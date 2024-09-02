@@ -13,9 +13,9 @@ class RegistrationStatus
     private string $description;
 
     public function __construct(
-        #[Serializer\since(0.1)]
+        #[Serializer\Since(0.1)]
         bool $success,
-        #[Serializer\since(0.1)]
+        #[Serializer\Since(0.1)]
         string $description,
     ) {
         $this->success = $success;

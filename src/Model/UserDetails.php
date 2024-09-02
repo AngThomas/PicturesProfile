@@ -16,15 +16,15 @@ class UserDetails
      * @param PhotoDetails[] $photos
      */
     public function __construct(
-        #[Serializer\since(0.1)]
+        #[Serializer\Since(0.1)]
         string $email,
-        #[Serializer\since(0.1)]
+        #[Serializer\Since(0.1)]
         string $fullName,
-        #[Serializer\since(0.1)]
+        #[Serializer\Since(0.1)]
         bool $active,
-        #[Serializer\since(0.1)]
+        #[Serializer\Since(0.1)]
         string $avatar,
-        #[Serializer\since(0.1)]
+        #[Serializer\Since(0.1)]
         array $photos,
     ) {
         $this->email = $email;
@@ -34,19 +34,53 @@ class UserDetails
         $this->photos = $photos;
     }
 
-    /**
-     * @param PhotoDetails[] $photos
-     */
-    private function convertToModels(array $photos): array
+    public function getEmail(): string
     {
-        $modelPhotos = [];
-        foreach ($photos as $photo) {
-            $modelPhotos[] = new PhotoDetails(
-                $photo->getName(),
-                $photo->getUrl()
-            );
-        }
+        return $this->email;
+    }
 
-        return $modelPhotos;
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
+    public function getFullName(): string
+    {
+        return $this->fullName;
+    }
+
+    public function setFullName(string $fullName): void
+    {
+        $this->fullName = $fullName;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
+    }
+
+    public function getAvatar(): string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(string $avatar): void
+    {
+        $this->avatar = $avatar;
+    }
+
+    public function getPhotos(): array
+    {
+        return $this->photos;
+    }
+
+    public function setPhotos(array $photos): void
+    {
+        $this->photos = $photos;
     }
 }

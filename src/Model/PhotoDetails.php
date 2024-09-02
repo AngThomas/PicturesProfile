@@ -10,9 +10,9 @@ class PhotoDetails
     private string $url;
 
     public function __construct(
-        #[Serializer\since(0.1)]
+        #[Serializer\Since(0.1)]
         string $name,
-        #[Serializer\since(0.1)]
+        #[Serializer\Since(0.1)]
         string $url,
     ) {
         $this->name = $name;

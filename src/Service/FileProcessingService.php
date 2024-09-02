@@ -26,7 +26,7 @@ class FileProcessingService
     /**
      * @param UploadedFile[] $files
      *
-     * @return array<string>
+     * @return PhotoDetails[]
      *
      * @throws IOExceptionInterface
      * @throws ValidationException

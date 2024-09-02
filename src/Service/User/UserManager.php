@@ -30,7 +30,7 @@ class UserManager
         $this->fileProcessingService = $fileProcessingService;
     }
 
-    public function makeNewUser(UserDTO $userDTO): UserInterface
+    public function makeNewUser(UserDTO $userDTO): User
     {
         $photoEntities = [];
         if ($this->userRepository->findOneBy(['email' => $userDTO->getEmail()])) {
@@ -58,7 +58,7 @@ class UserManager
         return $user;
     }
 
-    public function saveNewUser(UserInterface $user): void
+    public function saveNewUser(User $user): void
     {
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -85,7 +85,7 @@ class UserManager
         $userDTO->setPhotos($photos);
     }
 
-    public function getUserDetails(UserInterface $user): UserDetails
+    public function getUserDetails(User $user): UserDetails
     {
         $photos = $user->getPhotos()->toArray();
         $modelPhotos = [];
