@@ -7,23 +7,12 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class DirectoryManager
 {
-    private string $directoryPath;
     private Filesystem $filesystem;
 
     public function __construct(
         Filesystem $filesystem,
     ) {
         $this->filesystem = $filesystem;
-    }
-
-    public function setDirectoryPath(string $directoryPath): void
-    {
-        $this->directoryPath = $directoryPath;
-    }
-
-    public function getDirectoryPath(): string
-    {
-        return $this->directoryPath;
     }
 
     public function directoryExists(string $directoryPath): bool

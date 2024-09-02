@@ -5,11 +5,14 @@ namespace App\Service\User;
 use App\DTO\UserDTO;
 use App\Entity\Photo;
 use App\Entity\User;
+use App\Exception\ValidationException;
 use App\Model\PhotoDetails;
 use App\Model\UserDetails;
 use App\Repository\UserRepository;
 use App\Service\FileProcessingService;
+use App\Service\UserPhotoManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -18,16 +21,16 @@ class UserManager
 {
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
-    private FileProcessingService $fileProcessingService;
+    private UserPhotoManager $userFileManager;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        UserRepository $userRepository,
-        FileProcessingService $fileProcessingService,
+        UserRepository         $userRepository,
+        UserPhotoManager       $userFileManager,
     ) {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
-        $this->fileProcessingService = $fileProcessingService;
+        $this->userFileManager = $userFileManager;
     }
 
     public function makeNewUser(UserDTO $userDTO): User
@@ -64,6 +67,10 @@ class UserManager
         $this->entityManager->flush();
     }
 
+    /**
+     * @throws ValidationException
+     * @throws IOExceptionInterface
+     */
     public function saveUserPhotos(UserDTO $userDTO): void
     {
         $files = $userDTO->getFiles();
@@ -79,9 +86,9 @@ class UserManager
                 break;
             }
         }
-        $savePath = $this->fileProcessingService->setSavePath();
+        $savePath = $this->userFileManager->setSavePath();
 
-        $photos = $this->fileProcessingService->uploadFiles($files, $savePath);
+        $photos = $this->userFileManager->upload($files, $savePath);
         $userDTO->setPhotos($photos);
     }
 
@@ -115,14 +122,4 @@ class UserManager
         return $modelPhotos;
     }
 
-    private function saveUserAvatar(UploadedFile $avatar, UserDTO $userDTO): string
-    {
-        $this->fileProcessingService->validateFile($avatar);
-        $savePath = $this->fileProcessingService->setSavePath();
-        $avatarPhoto = $this->fileProcessingService->saveFile($avatar, $savePath);
-        $userDTO->setAvatar($avatarPhoto->getUrl());
-        $userDTO->addPhoto($avatarPhoto);
-
-        return $savePath;
-    }
 }

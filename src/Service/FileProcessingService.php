@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Exception\ValidationException;
 use App\Model\PhotoDetails;
+use App\Service\File\FileNameGenerator;
+use App\Service\File\FileValidator;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -12,14 +14,17 @@ class FileProcessingService
 {
     public const PUBLIC_PHOTOS_DIR = 'photos/';
 
-    private ValidationService $validationService;
+    private FileValidator $fileValidator;
+    private FileNameGenerator $fileNameGenerator;
     private DirectoryManager $directoryManager;
 
     public function __construct(
-        ValidationService $validationService,
+        FileValidator $fileValidator,
+        FileNameGenerator $fileNameGenerator,
         DirectoryManager $directoryManager,
     ) {
-        $this->validationService = $validationService;
+        $this->fileValidator = $fileValidator;
+        $this->fileNameGenerator = $fileNameGenerator;
         $this->directoryManager = $directoryManager;
     }
 
@@ -37,7 +42,7 @@ class FileProcessingService
 
         $photoPaths = [];
         foreach ($files as $file) {
-            $this->validateFile($file);
+            $this->fileValidator->validate($file);
             $photoPaths[] = $this->saveFile($file, $targetDir);
         }
 
@@ -69,7 +74,7 @@ class FileProcessingService
             throw new \Exception('Cannot determine file extension.');
         }
 
-        $uniqueFileName = $this->createFileName($file->getClientOriginalName(), $file->guessExtension());
+        $uniqueFileName = $this->fileNameGenerator->createFileName($file->getClientOriginalName(), $file->guessExtension());
 
         $file->move($destination, $uniqueFileName);
 
@@ -79,31 +84,4 @@ class FileProcessingService
         );
     }
 
-    /**
-     * @throws ValidationException
-     */
-    public function validateFile(UploadedFile $file): void
-    {
-        $this->validationService->validate($file, [
-            new Assert\File([
-                'maxSize' => '2M',
-                'maxSizeMessage' => 'Maximum size allowed (2MB per file) exceeded.',
-                'mimeTypes' => ['image/jpeg', 'image/png'],
-                'mimeTypesMessage' => 'Please upload a valid JPEG or PNG file.',
-            ]),
-        ]);
-    }
-
-    private function createFileName(string $fileName, string $extension): string
-    {
-        $originalFilename = pathinfo($fileName, PATHINFO_FILENAME);
-        $safeFilename = $this->generateUniqueFileName($originalFilename);
-
-        return $safeFilename.'.'.$extension;
-    }
-
-    private function generateUniqueFileName(string $originalFileName): string
-    {
-        return $originalFileName.uniqid();
-    }
 }

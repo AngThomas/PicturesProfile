@@ -4,6 +4,7 @@ namespace App\Handler;
 
 use App\DTO\UserDTO;
 use App\Exception\ValidationException;
+use App\Interface\RegistrationInterface;
 use App\Model\RegistrationStatus;
 use App\Service\User\RegistrationService;
 use App\Service\User\UserManager;
@@ -11,17 +12,16 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 class RegistrationProcessHandler
 {
-    private RegistrationService $registrationService;
+    private RegistrationInterface $registrationService;
 
     public function __construct(
-        RegistrationService $registrationService,
+        RegistrationInterface $registrationService,
     ) {
         $this->registrationService = $registrationService;
     }
 
     /**
      * @throws ValidationException
-     * @throws IOExceptionInterface
      */
     public function handle(UserDTO $userDTO): RegistrationStatus
     {
