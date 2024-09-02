@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Entity\Photo;
 use JMS\Serializer\Annotation as Serializer;
 
 class PhotoDetails
@@ -37,5 +38,22 @@ class PhotoDetails
     public function setUrl(string $url): void
     {
         $this->url = $url;
+    }
+
+    /**
+     * @param Photo $photos
+     * @return PhotoDetails[]
+     */
+    public static function convertToModels(array $photos): array
+    {
+        $modelPhotos = [];
+        foreach ($photos as $photo) {
+            $modelPhotos[] = new self(
+                $photo->getName(),
+                $photo->getUrl()
+            );
+        }
+
+        return $modelPhotos;
     }
 }

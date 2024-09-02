@@ -7,6 +7,8 @@ use JMS\Serializer\Annotation as Serializer;
 class UserDetails
 {
     private string $email;
+    private string $firstName;
+    private string $lastName;
     private string $fullName;
     private bool $active;
     private string $avatar;
@@ -19,6 +21,10 @@ class UserDetails
         #[Serializer\Since(0.1)]
         string $email,
         #[Serializer\Since(0.1)]
+        string $firstName,
+        #[Serializer\Since(0.1)]
+        string $lastName,
+        #[Serializer\Since(0.1)]
         string $fullName,
         #[Serializer\Since(0.1)]
         bool $active,
@@ -28,6 +34,8 @@ class UserDetails
         array $photos,
     ) {
         $this->email = $email;
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
         $this->fullName = $fullName;
         $this->active = $active;
         $this->avatar = $avatar;

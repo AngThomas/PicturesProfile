@@ -54,22 +54,18 @@ class UserManager
         return $user;
     }
 
-    public function saveNewUser(User $user): void
-    {
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
-    }
-
     public function getUserDetails(User $user): UserDetails
     {
         $photos = $user->getPhotos()->toArray();
         $modelPhotos = [];
         if (!empty($photos)) {
-            $modelPhotos = $this->convertToModels($photos);
+            $modelPhotos = PhotoDetails::convertToModels($photos);
         }
 
         return new UserDetails(
             $user->getEmail(),
+            $user->getFirstName(),
+            $user->getLastName(),
             $user->getFullName(),
             $user->isActive(),
             $user->getAvatar(),
@@ -77,16 +73,4 @@ class UserManager
         );
     }
 
-    private function convertToModels(array $photos): array
-    {
-        $modelPhotos = [];
-        foreach ($photos as $photo) {
-            $modelPhotos[] = new PhotoDetails(
-                $photo->getName(),
-                $photo->getUrl()
-            );
-        }
-
-        return $modelPhotos;
-    }
 }
