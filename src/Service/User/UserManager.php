@@ -9,13 +9,9 @@ use App\Exception\ValidationException;
 use App\Model\PhotoDetails;
 use App\Model\UserDetails;
 use App\Repository\UserRepository;
-use App\Service\FileProcessingService;
-use App\Service\UserPhotoManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserManager
 {

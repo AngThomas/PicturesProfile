@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\User;
 
 use App\Exception\ValidationException;
 use App\Model\PhotoDetails;
+use App\Service\DirectoryManager;
 use App\Service\File\FileNameGenerator;
 use App\Service\File\FileUploader;
 use App\Service\File\FileValidator;
@@ -15,19 +16,13 @@ class UserPhotoManager
     public const PUBLIC_PHOTOS_DIR = 'photos/';
 
     private ?string $savePath;
-    private FileValidator $fileValidator;
-    private FileNameGenerator $fileNameGenerator;
     private FileUploader $fileUploader;
     private DirectoryManager $directoryManager;
 
     public function __construct(
-        FileValidator $fileValidator,
-        FileNameGenerator $fileNameGenerator,
         FileUploader $fileUploader,
         DirectoryManager $directoryManager,
     ) {
-        $this->fileValidator = $fileValidator;
-        $this->fileNameGenerator = $fileNameGenerator;
         $this->fileUploader = $fileUploader;
         $this->directoryManager = $directoryManager;
     }
@@ -86,10 +81,10 @@ class UserPhotoManager
     /**
      * @throws ValidationException
      * @throws IOExceptionInterface
+     * @throws \Exception
      */
     private function uploadAvatar(UploadedFile $avatar): PhotoDetails
     {
-        $this->fileValidator->validate($avatar);
         $savedAvatarFile = $this->fileUploader->uploadFile($avatar, $this->savePath);
 
         return new PhotoDetails(

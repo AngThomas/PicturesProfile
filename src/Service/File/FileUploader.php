@@ -3,23 +3,19 @@
 namespace App\Service\File;
 
 use App\Exception\ValidationException;
-use App\Service\DirectoryManager;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileUploader
 {
     private FileValidator $fileValidator;
     private FileNameGenerator $fileNameGenerator;
-    private DirectoryManager $directoryManager;
 
     public function __construct(
         FileValidator $fileValidator,
         FileNameGenerator $fileNameGenerator,
-        DirectoryManager $directoryManager,
     ) {
         $this->fileValidator = $fileValidator;
         $this->fileNameGenerator = $fileNameGenerator;
-        $this->directoryManager = $directoryManager;
     }
 
     /**

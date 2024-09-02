@@ -7,7 +7,6 @@ namespace App\Service\User;
 use App\DTO\UserDTO;
 use App\Exception\ValidationException;
 use App\Interface\RegistrationInterface;
-use App\Service\UserPhotoManager;
 use App\Service\ValidationService;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -20,10 +19,10 @@ class RegistrationService implements RegistrationInterface
     private ValidationService $validationService;
 
     public function __construct(
-        UserManager                 $userManager,
-        UserPhotoManager            $userPhotoManager,
+        UserManager $userManager,
+        UserPhotoManager $userPhotoManager,
         UserPasswordHasherInterface $passwordHasher,
-        ValidationService           $validationService,
+        ValidationService $validationService,
     ) {
         $this->userManager = $userManager;
         $this->userPhotoManager = $userPhotoManager;
