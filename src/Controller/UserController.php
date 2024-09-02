@@ -13,15 +13,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
 #[Route('/api/users')]
 class UserController extends AbstractController
 {
     private SerializerInterface $serializer;
+
     public function __construct(
-        SerializerInterface $serializer
-    )
-    {
+        SerializerInterface $serializer,
+    ) {
         $this->serializer = $serializer;
     }
 
@@ -29,6 +28,7 @@ class UserController extends AbstractController
     public function register(Request $request, RegistrationProcessHandler $registrationProcessHandler): JsonResponse
     {
         $registrationStatus = $registrationProcessHandler->handle(UserDTO::fromRequest($request));
+
         return JsonResponse::fromJsonString(
             $this->serializer->serialize($registrationStatus, 'json', SerializationContext::create()),
             $registrationStatus->isSuccess() ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR
@@ -39,6 +39,7 @@ class UserController extends AbstractController
     public function userDetails(UserManager $userManager): JsonResponse
     {
         $userModel = $userManager->getUserDetails($this->getUser());
+
         return JsonResponse::fromJsonString(
             $this->serializer->serialize($userModel, 'json', SerializationContext::create()),
             Response::HTTP_OK

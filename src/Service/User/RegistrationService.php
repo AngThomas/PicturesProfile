@@ -1,17 +1,13 @@
 <?php
+
 // src/Service/RegistrationService.php
 
 namespace App\Service\User;
 
-
 use App\DTO\UserDTO;
-use App\Entity\User;
 use App\Exception\ValidationException;
 use App\Service\ValidationService;
-use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
 
 class RegistrationService
 {
@@ -22,7 +18,7 @@ class RegistrationService
     public function __construct(
         UserManager $userManager,
         UserPasswordHasherInterface $passwordHasher,
-        ValidationService $validationService
+        ValidationService $validationService,
     ) {
         $this->userManager = $userManager;
         $this->passwordHasher = $passwordHasher;
@@ -40,6 +36,7 @@ class RegistrationService
         $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPlainPassword()));
         $user->eraseCredentials();
         $this->userManager->saveNewUser($user);
+
         return true;
     }
 }

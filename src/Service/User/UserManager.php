@@ -10,36 +10,32 @@ use App\Model\UserDetails;
 use App\Repository\UserRepository;
 use App\Service\FileProcessingService;
 use Doctrine\ORM\EntityManagerInterface;
-use mysql_xdevapi\Exception;
-use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\UserProviderFactoryInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UserManager
 {
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
     private FileProcessingService $fileProcessingService;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         UserRepository $userRepository,
-        FileProcessingService $fileProcessingService
-    )
-    {
+        FileProcessingService $fileProcessingService,
+    ) {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
         $this->fileProcessingService = $fileProcessingService;
     }
-    public function makeNewUser(UserDTO $userDTO): User
+
+    public function makeNewUser(UserDTO $userDTO): UserInterface
     {
         $photoEntities = [];
-        if ($this->userRepository->findOneBy(['email' => $userDTO->getEmail()]))
-        {
+        if ($this->userRepository->findOneBy(['email' => $userDTO->getEmail()])) {
             throw new BadCredentialsException('User already exists');
         }
-
 
         $user = new User(
             $userDTO->getEmail(),
@@ -50,13 +46,11 @@ class UserManager
             $userDTO->getAvatar()
         );
 
-        foreach ($userDTO->getPhotos() as $photo)
-        {
+        foreach ($userDTO->getPhotos() as $photo) {
             $photoEntities[] = new Photo(
                 $photo->getName(),
                 $photo->getUrl()
             );
-
         }
 
         $user->setPhotos($photoEntities);
@@ -64,13 +58,13 @@ class UserManager
         return $user;
     }
 
-    public function saveNewUser(User $user): void
+    public function saveNewUser(UserInterface $user): void
     {
         $this->entityManager->persist($user);
         $this->entityManager->flush();
     }
 
-    public function saveUserPhotos(UserDto $userDTO): void
+    public function saveUserPhotos(UserDTO $userDTO): void
     {
         $files = $userDTO->getFiles();
 
@@ -91,13 +85,14 @@ class UserManager
         $userDTO->setPhotos($photos);
     }
 
-    public function getUserDetails(User $user): UserDetails
+    public function getUserDetails(UserInterface $user): UserDetails
     {
-        $photos = $user->getPhotos();
+        $photos = $user->getPhotos()->toArray();
         $modelPhotos = [];
-        if (isset($photos)) {
-            $modelPhotos = $this->convertToModels($photos->toArray());
+        if (!empty($photos)) {
+            $modelPhotos = $this->convertToModels($photos);
         }
+
         return new UserDetails(
             $user->getEmail(),
             $user->getFullName(),
@@ -116,8 +111,10 @@ class UserManager
                 $photo->getUrl()
             );
         }
+
         return $modelPhotos;
     }
+
     private function saveUserAvatar(UploadedFile $avatar, UserDTO $userDTO): string
     {
         $this->fileProcessingService->validateFile($avatar);
@@ -125,6 +122,7 @@ class UserManager
         $avatarPhoto = $this->fileProcessingService->saveFile($avatar, $savePath);
         $userDTO->setAvatar($avatarPhoto->getUrl());
         $userDTO->addPhoto($avatarPhoto);
+
         return $savePath;
     }
 }

@@ -8,10 +8,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ValidationService
 {
     private ValidatorInterface $validator;
+
     public function __construct(
-        ValidatorInterface $validator
-    )
-    {
+        ValidatorInterface $validator,
+    ) {
         $this->validator = $validator;
     }
 

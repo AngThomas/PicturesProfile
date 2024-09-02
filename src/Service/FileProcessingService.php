@@ -10,30 +10,29 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class FileProcessingService
 {
-    const PUBLIC_PHOTOS_DIR = 'photos/';
+    public const PUBLIC_PHOTOS_DIR = 'photos/';
 
     private ValidationService $validationService;
     private DirectoryManager $directoryManager;
 
     public function __construct(
         ValidationService $validationService,
-        DirectoryManager $directoryManager
-    )
-    {
+        DirectoryManager $directoryManager,
+    ) {
         $this->validationService = $validationService;
         $this->directoryManager = $directoryManager;
     }
 
     /**
      * @param UploadedFile[] $files
-     * @param string|null $targetDir
+     *
      * @return array<string>
+     *
      * @throws IOExceptionInterface
      * @throws ValidationException
      */
     public function uploadFiles(array $files, ?string $targetDir = null): array
     {
-
         $targetDir = $this->setSavePath($targetDir);
 
         $photoPaths = [];
@@ -47,13 +46,14 @@ class FileProcessingService
 
     public function setSavePath(?string $targetDir = null): string
     {
-        if ($targetDir === null) {
+        if (null === $targetDir) {
             $uniqueDirName = uniqid();
-            $targetDir = self::PUBLIC_PHOTOS_DIR . $uniqueDirName;
+            $targetDir = self::PUBLIC_PHOTOS_DIR.$uniqueDirName;
         }
 
         $this->directoryManager->setDirectoryPath($targetDir);
         $this->directoryManager->ensureDirectoryExists($targetDir);
+
         return $targetDir;
     }
 
@@ -72,7 +72,7 @@ class FileProcessingService
 
         return new PhotoDetails(
             $uniqueFileName,
-            $destination . '/' . $uniqueFileName
+            $destination.'/'.$uniqueFileName
         );
     }
 
@@ -95,11 +95,12 @@ class FileProcessingService
     {
         $originalFilename = pathinfo($fileName, PATHINFO_FILENAME);
         $safeFilename = $this->generateUniqueFileName($originalFilename);
-        return $safeFilename . '.' . $extension;
+
+        return $safeFilename.'.'.$extension;
     }
 
     private function generateUniqueFileName(string $originalFileName): string
     {
-        return $originalFileName . uniqid();
+        return $originalFileName.uniqid();
     }
 }

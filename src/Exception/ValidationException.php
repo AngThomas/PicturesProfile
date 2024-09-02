@@ -2,14 +2,13 @@
 
 namespace App\Exception;
 
-use Exception;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class ValidationException extends Exception
+class ValidationException extends \Exception
 {
     private ConstraintViolationListInterface $violations;
 
-    public function __construct( ConstraintViolationListInterface $violations)
+    public function __construct(ConstraintViolationListInterface $violations)
     {
         $this->violations = $violations;
         parent::__construct('Validation error');
@@ -17,11 +16,11 @@ class ValidationException extends Exception
 
     public function getViolations(): array
     {
-        $errors=[];
+        $errors = [];
         foreach ($this->violations as $violation) {
             $errors[$violation->getPropertyPath()] = $violation->getMessage();
-
         }
+
         return $errors;
     }
 }

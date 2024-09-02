@@ -17,17 +17,16 @@ class UserDetails
      */
     public function __construct(
         #[Serializer\since(0.1)]
-         string $email,
+        string $email,
         #[Serializer\since(0.1)]
-         string $fullName,
+        string $fullName,
         #[Serializer\since(0.1)]
-         bool $active,
+        bool $active,
         #[Serializer\since(0.1)]
-         string $avatar,
+        string $avatar,
         #[Serializer\since(0.1)]
-         array $photos
-    )
-    {
+        array $photos,
+    ) {
         $this->email = $email;
         $this->fullName = $fullName;
         $this->active = $active;
@@ -47,6 +46,7 @@ class UserDetails
                 $photo->getUrl()
             );
         }
+
         return $modelPhotos;
     }
 }
