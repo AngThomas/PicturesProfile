@@ -44,6 +44,9 @@ class FileProcessingService
         return $photoPaths;
     }
 
+    /**
+     * @throws IOExceptionInterface
+     */
     public function setSavePath(?string $targetDir = null): string
     {
         if (null === $targetDir) {
