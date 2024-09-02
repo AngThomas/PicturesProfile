@@ -2,7 +2,7 @@
 
 namespace App\Service\File;
 
-use App\Exception\ValidationException;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileUploader
@@ -20,10 +20,8 @@ class FileUploader
 
     /**
      * @param UploadedFile[] $files
-     *
-     *
-     * @throws ValidationException
-     * @throws \Exception
+     * @throws \InvalidArgumentException
+     * @return File[]
      */
     public function uploadFiles(array $files, string $targetDir): array
     {
@@ -37,23 +35,20 @@ class FileUploader
     }
 
     /**
-     * @return array<string, string>
+     * @return File[]
      *
-     * @throws \Exception
+     * @throws \InvalidArgumentException
+     *
+     * @throwsValidationException
      */
-    public function uploadFile(UploadedFile $file, string $destination): array
+    public function uploadFile(UploadedFile $file, string $destination): File
     {
         if (null === $file->guessExtension()) {
-            throw new \Exception('Cannot determine file extension.');
+            throw new \InvalidArgumentException('Cannot determine file extension.');
         }
         $this->fileValidator->validate($file);
         $uniqueFileName = $this->fileNameGenerator->createFileName($file->getClientOriginalName(), $file->guessExtension());
 
-        $file->move($destination, $uniqueFileName);
-
-        return [
-            'name' => $uniqueFileName,
-            'path' => $destination.'/'.$uniqueFileName,
-        ];
+        return $file->move($destination, $uniqueFileName);
     }
 }

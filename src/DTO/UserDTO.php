@@ -164,7 +164,6 @@ class UserDTO
             $request->request->get('lastName'),
             $request->request->get('active'),
             $request->files->all(),
-            $request->request->get('avatar'),
         );
     }
 }

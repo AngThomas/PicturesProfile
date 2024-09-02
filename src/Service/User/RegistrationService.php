@@ -36,8 +36,7 @@ class RegistrationService implements RegistrationInterface
      */
     public function register(UserDTO $userDTO): bool
     {
-        $photos = $this->userPhotoManager->uploadUserPhotos($userDTO->getFiles());
-        $userDTO->setPhotos($photos);
+        $this->userPhotoManager->uploadUserPhotos($userDTO);
         $user = $this->userManager->makeNewUser($userDTO);
         $this->validationService->validate($user);
         $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPlainPassword()));
