@@ -21,8 +21,8 @@ class UserManager
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        UserRepository         $userRepository,
-        UserPhotoManager       $userFileManager,
+        UserRepository $userRepository,
+        UserPhotoManager $userFileManager,
     ) {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
@@ -63,31 +63,6 @@ class UserManager
         $this->entityManager->flush();
     }
 
-    /**
-     * @throws ValidationException
-     * @throws IOExceptionInterface
-     */
-    public function saveUserPhotos(UserDTO $userDTO): void
-    {
-        $files = $userDTO->getFiles();
-
-        if (empty($files)) {
-            return;
-        }
-
-        foreach ($files as $index => $file) {
-            if ('avatar' === $file->getClientOriginalName()) {
-                $savePath = $this->saveUserAvatar($file, $userDTO);
-                unset($files[$index]);
-                break;
-            }
-        }
-        $savePath = $this->userFileManager->setSavePath();
-
-        $photos = $this->userFileManager->upload($files, $savePath);
-        $userDTO->setPhotos($photos);
-    }
-
     public function getUserDetails(User $user): UserDetails
     {
         $photos = $user->getPhotos()->toArray();
@@ -117,5 +92,4 @@ class UserManager
 
         return $modelPhotos;
     }
-
 }
