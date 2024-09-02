@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -24,7 +23,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Email()]
     #[Assert\NotBlank()]
     private string $email;
-
 
     #[Assert\Length(min: 6, max: 50)]
     #[Assert\Regex(pattern: '/\d/', message: 'Password must contain at least one number.')]
@@ -56,10 +54,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $avatar;
 
     #[ORM\Column(name: 'created_at', generated: 'INSERT')]
-    private DateTimeImmutable $createdAt;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column('updated_at', generated: 'ALWAYS')]
-    private DateTimeImmutable $updatedAt;
+    private \DateTimeImmutable $updatedAt;
 
     public function __construct(
         string $email,
@@ -67,9 +65,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         string $firstName,
         string $lastName,
         bool $active,
-        string $avatar
-    )
-    {
+        string $avatar,
+    ) {
         $this->email = $email;
         $this->plainPassword = $password;
         $this->firstName = $firstName;
@@ -78,8 +75,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->active = $active;
         $this->avatar = $avatar;
         $this->photos = new ArrayCollection();
-        $this->createdAt = new DateTimeImmutable();
-        $this->updatedAt = new DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): int
@@ -109,7 +106,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->plainPassword = $plainPassword;
     }
 
-
     public function getPassword(): string
     {
         return $this->password;
@@ -121,7 +117,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
 
     /**
      * @return Collection<int, Photo>
@@ -191,8 +186,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     private function setFullName(): void
     {
-        $this->fullName = $this->firstName . ' ' . $this->lastName;
+        $this->fullName = $this->firstName.' '.$this->lastName;
     }
+
     public function isActive(): bool
     {
         return $this->active;
@@ -217,24 +213,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCreatedAt(): DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): DateTimeImmutable
+    public function getUpdatedAt(): \DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 

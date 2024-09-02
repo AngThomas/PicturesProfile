@@ -2,39 +2,25 @@
 
 namespace App\Service;
 
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class DirectoryManager
 {
-    private string $directoryPath;
     private Filesystem $filesystem;
 
     public function __construct(
-        Filesystem $filesystem
-    )
-    {
+        Filesystem $filesystem,
+    ) {
         $this->filesystem = $filesystem;
     }
 
-    public function setDirectoryPath(string $directoryPath): void
-    {
-        $this->directoryPath = $directoryPath;
-    }
-
-    public function getDirectoryPath(): string
-    {
-        return $this->directoryPath;
-    }
     public function directoryExists(string $directoryPath): bool
     {
         return $this->filesystem->exists($directoryPath);
     }
 
     /**
-
-     * @param string $directoryPath
-     * @return void
      * @throws IOExceptionInterface
      */
     public function createDirectory(string $directoryPath): void
@@ -42,9 +28,7 @@ class DirectoryManager
         $this->filesystem->mkdir($directoryPath, 0700);
     }
 
-     /**
-     * @param string $directoryPath
-     * @return string
+    /**
      * @throws IOExceptionInterface
      */
     public function ensureDirectoryExists(string $directoryPath): void

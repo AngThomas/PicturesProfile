@@ -11,9 +11,8 @@ class CredentialsDTO
 
     public function __construct(
         string $email,
-        string $password
-    )
-    {
+        string $password,
+    ) {
         $this->email = $email;
         $this->password = $password;
     }

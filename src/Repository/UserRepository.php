@@ -40,28 +40,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-//    /**
-//     * @return User[] Returns an array of User objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findActiveUsersByDate(\DateTimeInterface $date, int $page, int $batchSize): array
+    {
+        $qb = $this->createQueryBuilder('u');
 
-//    public function findOneBySomeField($value): ?User
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $qb->select('u.email')
+            ->where('u.active = :active')
+            ->andWhere('DATE(u.createdAt) = :date')
+            ->setParameter('active', true)
+            ->setParameter('date', $date->format('Y-m-d'))
+            ->setFirstResult(($page - 1) * $batchSize)
+            ->setMaxResults($batchSize);
+
+        return $qb->getQuery()->getArrayResult();
+    }
 }
