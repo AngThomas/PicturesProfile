@@ -17,16 +17,13 @@ class UserManager
 {
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
-    private UserPhotoManager $userFileManager;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         UserRepository $userRepository,
-        UserPhotoManager $userFileManager,
     ) {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
-        $this->userFileManager = $userFileManager;
     }
 
     public function makeNewUser(UserDTO $userDTO): User
