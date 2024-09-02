@@ -5,24 +5,18 @@ namespace App\Service\User;
 use App\DTO\UserDTO;
 use App\Entity\Photo;
 use App\Entity\User;
-use App\Exception\ValidationException;
 use App\Model\PhotoDetails;
 use App\Model\UserDetails;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 class UserManager
 {
-    private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
         UserRepository $userRepository,
     ) {
-        $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
     }
 
