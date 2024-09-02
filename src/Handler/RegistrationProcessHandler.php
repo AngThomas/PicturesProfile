@@ -14,7 +14,6 @@ class RegistrationProcessHandler
     private RegistrationService $registrationService;
 
     public function __construct(
-        UserManager $userManager,
         RegistrationService $registrationService,
     ) {
         $this->registrationService = $registrationService;
