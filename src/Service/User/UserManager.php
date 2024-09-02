@@ -9,6 +9,7 @@ use App\Model\PhotoDetails;
 use App\Model\UserDetails;
 use App\Repository\UserRepository;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 
 class UserManager
 {
@@ -20,11 +21,14 @@ class UserManager
         $this->userRepository = $userRepository;
     }
 
+    /**
+     * @throws CustomUserMessageAccountStatusException
+     */
     public function makeNewUser(UserDTO $userDTO): User
     {
         $photoEntities = [];
         if ($this->userRepository->findOneBy(['email' => $userDTO->getEmail()])) {
-            throw new BadCredentialsException('User already exists');
+            throw new CustomUserMessageAccountStatusException('User already exists');
         }
 
         $user = new User(
