@@ -5,6 +5,7 @@ namespace App\Handler\Exception;
 use App\DTO\JmsSerializable\ExceptionDTO;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class KernelExceptionHandler
@@ -21,9 +22,9 @@ abstract class KernelExceptionHandler
 
     abstract public function handle(\Throwable $exception): Response;
 
-    protected function assembleResponse(ExceptionDTO $exceptionDTO): Response
+    protected function assembleResponse(ExceptionDTO $exceptionDTO): JsonResponse
     {
-        return new Response(
+        return JsonResponse::fromJsonString(
             $this->serializer->serialize($exceptionDTO, 'json', SerializationContext::create()),
             $exceptionDTO->getStatusCode()
         );

@@ -12,6 +12,7 @@ class ValidationExceptionHandler extends KernelExceptionHandler
     {
         return [
             ValidationException::class,
+            \InvalidArgumentException::class
         ];
     }
 

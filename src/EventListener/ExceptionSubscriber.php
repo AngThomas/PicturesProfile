@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
-    private array $exceptionHandlers;
+    private iterable $exceptionHandlers;
     public function __construct(iterable $exceptionHandlers)
     {
         $this->exceptionHandlers = $exceptionHandlers;
@@ -25,8 +25,9 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
+        $exceptionClass = basename(get_class($exception));
         foreach ($this->exceptionHandlers as $exceptionHandler) {
-            if (in_array($exception, $exceptionHandler->getSupportedExceptions($exception))) {
+            if (in_array($exceptionClass, $exceptionHandler->getSupportedExceptions($exception))) {
                 $response = $exceptionHandler->handle($event->getThrowable());
                 $event->setResponse($response);
                 return;

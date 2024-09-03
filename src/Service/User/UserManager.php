@@ -24,7 +24,7 @@ class UserManager
     }
 
     /**
-     * @throws CustomUserMessageAccountStatusException
+     * @throws UserAlreadyExistsException
      */
     public function makeNewUser(UserDTO $userDTO): User
     {

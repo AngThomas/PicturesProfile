@@ -3,6 +3,7 @@
 namespace App\Handler\Email;
 
 use App\Model\Email\EmailMessage;
+use Symfony\Component\Mailer\Exception\RuntimeException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -18,6 +19,9 @@ class EmailMessageHandler
         $this->mailer = $mailer;
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function __invoke(EmailMessage $emailMessage)
     {
         $email = (new Email())
@@ -29,10 +33,9 @@ class EmailMessageHandler
 
         try {
             $this->mailer->send($email);
-        } catch (\Exception $e) {
-            // Handle exception if needed (log it, etc.)
-            throw new \RuntimeException('Failed to send email to '.$emailMessage->getRecipient().': '.$e->getMessage());
-        } catch (TransportExceptionInterface $e) {
+        } catch(Throwable $throwable) {
+            throw new RuntimeException('Email could not be send.', 500);
         }
+
     }
 }

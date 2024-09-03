@@ -2,8 +2,10 @@
 
 namespace App\Service\File;
 
+use App\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Response;
 
 class FileUploader
 {
@@ -38,13 +40,14 @@ class FileUploader
      * @return File[]
      *
      * @throws \InvalidArgumentException
+     * @throws ValidationException
      *
      * @throwsValidationException
      */
     public function uploadFile(UploadedFile $file, string $destination): File
     {
         if (null === $file->guessExtension()) {
-            throw new \InvalidArgumentException('Cannot determine file extension.');
+            throw new \InvalidArgumentException('Cannot determine file extension.', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         $this->fileValidator->validate($file);
         $uniqueFileName = $this->fileNameGenerator->createFileName($file->getClientOriginalName(), $file->guessExtension());

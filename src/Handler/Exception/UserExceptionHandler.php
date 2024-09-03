@@ -18,6 +18,7 @@ class UserExceptionHandler extends KernelExceptionHandler
             \Lexik\Bundle\JWTAuthenticationBundle\Exception\UserNotFoundException::class,
             UnsupportedUserException::class,
             UserAlreadyExistsException::class,
+            \RuntimeException::class
         ];
     }
 
@@ -25,7 +26,7 @@ class UserExceptionHandler extends KernelExceptionHandler
     {
         return $this->assembleResponse(
             new ExceptionDTO(
-                'User-related error occured',
+                'Error occured',
                 $exception->getMessage(),
                 $exception->getCode()
             )
