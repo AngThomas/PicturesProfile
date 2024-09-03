@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
+use App\DTO\JmsSerializable\RegistrationStatusDTO;
 use App\DTO\UserDTO;
-use App\Handler\RegistrationProcessHandler;
+use App\Interface\UserRegistrarInterface;
 use App\Service\User\UserManager;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
@@ -25,9 +26,12 @@ class UserController extends AbstractController
     }
 
     #[Route('/register', name: 'app_user_register', methods: ['POST'])]
-    public function register(Request $request, RegistrationProcessHandler $registrationProcessHandler): JsonResponse
+    public function register(Request $request, UserRegistrarInterface $userRegistrar): JsonResponse
     {
-        $registrationStatus = $registrationProcessHandler->handle(UserDTO::fromRequest($request));
+        /**
+         * @param RegistrationStatusDTO $registrationStatus
+         */
+        $registrationStatus = $userRegistrar->register(UserDTO::fromRequest($request));
 
         return JsonResponse::fromJsonString(
             $this->serializer->serialize($registrationStatus, 'json', SerializationContext::create()),
@@ -38,7 +42,7 @@ class UserController extends AbstractController
     #[Route('/me', name: 'app_user_details', methods: ['GET'])]
     public function userDetails(UserManager $userManager): JsonResponse
     {
-        $userModel = $userManager->getUserDetails($this->getUser());
+        $userModel = $userManager->getUserDetails($this->getUser()->getUserIdentifier());
 
         return JsonResponse::fromJsonString(
             $this->serializer->serialize($userModel, 'json', SerializationContext::create()),

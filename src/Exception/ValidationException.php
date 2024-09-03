@@ -2,6 +2,7 @@
 
 namespace App\Exception;
 
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class ValidationException extends \Exception
@@ -11,16 +12,16 @@ class ValidationException extends \Exception
     public function __construct(ConstraintViolationListInterface $violations)
     {
         $this->violations = $violations;
-        parent::__construct('Validation error');
+        parent::__construct($this->getViolations(), Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
-    public function getViolations(): array
+    private function getViolations(): string
     {
         $errors = [];
         foreach ($this->violations as $violation) {
             $errors[$violation->getPropertyPath()] = $violation->getMessage();
         }
 
-        return $errors;
+        return implode(', ', $errors);
     }
 }

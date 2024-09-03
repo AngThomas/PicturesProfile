@@ -2,9 +2,9 @@
 
 namespace App\Service\User;
 
+use App\DTO\JmsSerializable\PhotoDetailsDTO;
 use App\DTO\UserDTO;
 use App\Exception\ValidationException;
-use App\Model\PhotoDetails;
 use App\Service\DirectoryManager;
 use App\Service\File\FileUploader;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
@@ -34,7 +34,6 @@ class UserPhotoManager
     }
 
     /**
-     *
      * @throws IOExceptionInterface
      * @throws ValidationException
      */
@@ -58,7 +57,7 @@ class UserPhotoManager
 
         $files = $this->fileUploader->uploadFiles($files, $this->savePath);
         foreach ($files as $file) {
-            $photoDetails[] = new PhotoDetails(
+            $photoDetails[] = new PhotoDetailsDTO(
                 $file->getFilename(),
                 $this->baseUrl.'/'.$file->getPathname()
             );
@@ -89,11 +88,11 @@ class UserPhotoManager
     /**
      * @throws \InvalidArgumentException
      */
-    private function uploadAvatar(UploadedFile $avatar): PhotoDetails
+    private function uploadAvatar(UploadedFile $avatar): PhotoDetailsDTO
     {
         $file = $this->fileUploader->uploadFile($avatar, $this->savePath);
 
-        return new PhotoDetails(
+        return new PhotoDetailsDTO(
             $file->getFilename(),
             $this->baseUrl.'/'.$file->getPathname()
         );

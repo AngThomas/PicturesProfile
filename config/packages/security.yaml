@@ -32,4 +32,4 @@ security:
     access_control:
         - { path: ^/api/users/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/users/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/users/me, roles: ROLE_USER }
+        - { path: ^/api/users/me, roles: IS_AUTHENTICATED_FULLY }

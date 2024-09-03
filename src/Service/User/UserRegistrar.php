@@ -1,18 +1,19 @@
 <?php
 
-// src/Service/RegistrationService.php
+// src/Service/UserRegistrar.php
 
 namespace App\Service\User;
 
+use App\DTO\JmsSerializable\RegistrationStatusDTO;
 use App\DTO\UserDTO;
 use App\Exception\ValidationException;
-use App\Interface\RegistrationInterface;
+use App\Interface\UserRegistrarInterface;
 use App\Service\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class RegistrationService implements RegistrationInterface
+class UserRegistrar implements UserRegistrarInterface
 {
     private UserManager $userManager;
     private UserPhotoManager $userPhotoManager;
@@ -38,7 +39,7 @@ class RegistrationService implements RegistrationInterface
      * @throws ValidationException
      * @throws IOExceptionInterface
      */
-    public function register(UserDTO $userDTO): bool
+    public function register(UserDTO $userDTO): RegistrationStatusDTO
     {
         $this->userPhotoManager->uploadUserPhotos($userDTO);
         $user = $this->userManager->makeNewUser($userDTO);
@@ -48,6 +49,9 @@ class RegistrationService implements RegistrationInterface
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        return true;
+        return new RegistrationStatusDTO(
+            true,
+            RegistrationStatusDTO::SUCCESS
+        );
     }
 }

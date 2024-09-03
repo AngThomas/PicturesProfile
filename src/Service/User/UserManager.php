@@ -2,14 +2,15 @@
 
 namespace App\Service\User;
 
+use App\DTO\JmsSerializable\PhotoDetailsDTO;
+use App\DTO\JmsSerializable\UserDetailsDTO;
 use App\DTO\UserDTO;
 use App\Entity\Photo;
 use App\Entity\User;
-use App\Model\PhotoDetails;
-use App\Model\UserDetails;
+use App\Exception\UserAlreadyExistsException;
 use App\Repository\UserRepository;
-use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 
 class UserManager
 {
@@ -22,13 +23,13 @@ class UserManager
     }
 
     /**
-     * @throws CustomUserMessageAccountStatusException
+     * @throws UserAlreadyExistsException
      */
     public function makeNewUser(UserDTO $userDTO): User
     {
         $photoEntities = [];
         if ($this->userRepository->findOneBy(['email' => $userDTO->getEmail()])) {
-            throw new CustomUserMessageAccountStatusException('User already exists');
+            throw new UserAlreadyExistsException('User already exists', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $user = new User(
@@ -52,15 +53,19 @@ class UserManager
         return $user;
     }
 
-    public function getUserDetails(User $user): UserDetails
+    public function getUserDetails(string $identifier): UserDetailsDTO
     {
+        $user = $this->userRepository->findOneBy(['email' => $identifier]);
+        if (!isset($user)) {
+            throw new UserNotFoundException('User has not been found.', Response::HTTP_NOT_FOUND);
+        }
         $photos = $user->getPhotos()->toArray();
         $modelPhotos = [];
         if (!empty($photos)) {
-            $modelPhotos = PhotoDetails::convertToModels($photos);
+            $modelPhotos = PhotoDetailsDTO::convertToModels($photos);
         }
 
-        return new UserDetails(
+        return new UserDetailsDTO(
             $user->getEmail(),
             $user->getFirstName(),
             $user->getLastName(),
@@ -70,5 +75,4 @@ class UserManager
             $modelPhotos
         );
     }
-
 }

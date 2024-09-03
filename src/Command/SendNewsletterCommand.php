@@ -2,74 +2,64 @@
 
 namespace App\Command;
 
-use App\Model\EmailMessage;
+use App\Model\Email\EmailData;
 use App\Repository\UserRepository;
-use App\Service\EmailSender;
+use App\Service\EmailDispatcher;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'SendNewsletter',
-    description: 'Add a short description for your command',
+    description: 'Sends the newsletter to new active users.',
 )]
 class SendNewsletterCommand extends Command
 {
-    private EmailSender $emailSender;
+    private EmailDispatcher $emailDispatcher;
     private UserRepository $userRepository;
 
     public function __construct(
-        EmailSender $emailSender,
+        EmailDispatcher $emailDispatcher,
         UserRepository $userRepository,
-        ?string $name = null,
     ) {
-        $this->emailSender = $emailSender;
+        parent::__construct();
+        $this->emailDispatcher = $emailDispatcher;
         $this->userRepository = $userRepository;
-        parent::__construct($name);
     }
 
     protected function configure(): void
     {
         $this
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
-        ;
+            ->addArgument('sender', InputArgument::REQUIRED, 'Email address of the sender.')
+            ->addArgument('subject', InputArgument::REQUIRED, 'Subject of the newsletter.')
+            ->addArgument('body', InputArgument::REQUIRED, 'Body of the newsletter.')
+            ->addArgument('batchSize', InputArgument::OPTIONAL, 'Number of users to process per batch.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $emailMessages = [];
-        $subject = 'Your best newsletter';
-        $messageBody = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id interdum nibh. Phasellus blandit tortor in cursus convallis. Praesent et tellus fermentum, pellentesque lectus at, tincidunt risus. Quisque in nisl malesuada, aliquet nibh at, molestie libero.';
-
+        $sender = $input->getArgument('sender');
+        $subject = $input->getArgument('subject');
+        $body = $input->getArgument('body');
+        $batchSize = null !== $input->getArgument('batchSize') ? (int) $input->getArgument('batchSize') : 100;
         $page = 1;
-        $batchSize = 500;
 
         do {
             $newActiveUsers = $this->userRepository->findActiveUsersByDate(new \DateTimeImmutable(), $page, $batchSize);
-            foreach ($newActiveUsers as $newActiveUser) {
-                $emailMessages[] = new EmailMessage(
-                    $newActiveUser['email'],
-                    $subject,
-                    $messageBody
-                );
-            }
 
-            if (count($emailMessages) >= $batchSize) {
-                $this->emailSender->sendEmail($emailMessages);
-                $emailMessages = [];
-            }
+            $emailMessages = (new EmailData(
+                $sender,
+                array_column($newActiveUsers, 'email'),
+                $subject,
+                $body
+            ))->createEmailMessages();
 
+            $this->emailDispatcher->dispatchMulti($emailMessages);
             ++$page;
-        } while (count($newActiveUsers) === $batchSize);
+        } while ($batchSize === count($newActiveUsers));
 
-        if (count($emailMessages) > 0) {
-            $this->emailSender->sendEmail($emailMessages);
-        }
-
-        return self::SUCCESS;
+        return Command::SUCCESS;
     }
 }

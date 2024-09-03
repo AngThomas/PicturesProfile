@@ -2,10 +2,10 @@
 
 namespace App\Service;
 
-use App\Model\EmailMessage;
+use App\Model\Email\EmailMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class EmailSender
+class EmailDispatcher
 {
     private MessageBusInterface $bus;
 
@@ -17,10 +17,15 @@ class EmailSender
     /**
      * @param EmailMessage[] $emailMessages
      */
-    public function sendEmail(array $emailMessages): void
+    public function dispatchMulti(array $emailMessages): void
     {
         foreach ($emailMessages as $emailMessage) {
             $this->bus->dispatch($emailMessage);
         }
+    }
+
+    public function dispatch(EmailMessage $emailMessage): void
+    {
+        $this->bus->dispatch($emailMessage);
     }
 }
