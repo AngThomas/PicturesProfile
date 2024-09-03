@@ -1,7 +1,9 @@
 Hello!
+
 As it is private repo with a task only, I uploaded private and public keys for JWT along with JWT_PASSPHRASE stored in secrets.
 
 Endpoint name are as in task description
+
 SendNewsletterCommand has to launched with parameters, I tested it with crontab and mailhog, it works as intended:
 
 
