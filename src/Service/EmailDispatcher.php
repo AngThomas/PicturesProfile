@@ -21,7 +21,7 @@ class EmailDispatcher
     public function dispatchMulti(array $emailMessages): void
     {
         foreach ($emailMessages as $emailMessage)
-        {dump('go');
+        {
             $this->bus->dispatch($emailMessage);
         }
     }
