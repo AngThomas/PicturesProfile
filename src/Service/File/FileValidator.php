@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Yaml\Yaml;
 
-
 class FileValidator
 {
     private ValidationService $validationService;
@@ -16,7 +15,7 @@ class FileValidator
 
     public function __construct(
         ValidationService $validationService,
-        $validationRulesPath
+        $validationRulesPath,
     ) {
         $this->validationService = $validationService;
         $this->rules = Yaml::parseFile($validationRulesPath)['file_validation'];

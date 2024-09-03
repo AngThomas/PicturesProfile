@@ -25,6 +25,7 @@ class EmailData
     public function setSender(string $sender): self
     {
         $this->sender = $sender;
+
         return $this;
     }
 
@@ -36,6 +37,7 @@ class EmailData
     public function setRecipients(array $recipients): self
     {
         $this->recipients = $recipients;
+
         return $this;
     }
 
@@ -47,6 +49,7 @@ class EmailData
     public function setSubject(string $subject): self
     {
         $this->subject = $subject;
+
         return $this;
     }
 
@@ -58,6 +61,7 @@ class EmailData
     public function setBody(string $body): self
     {
         $this->body = $body;
+
         return $this;
     }
 

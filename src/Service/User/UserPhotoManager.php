@@ -34,7 +34,6 @@ class UserPhotoManager
     }
 
     /**
-     *
      * @throws IOExceptionInterface
      * @throws ValidationException
      */

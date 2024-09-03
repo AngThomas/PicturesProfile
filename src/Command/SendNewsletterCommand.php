@@ -22,7 +22,7 @@ class SendNewsletterCommand extends Command
 
     public function __construct(
         EmailDispatcher $emailDispatcher,
-        UserRepository  $userRepository,
+        UserRepository $userRepository,
     ) {
         parent::__construct();
         $this->emailDispatcher = $emailDispatcher;
@@ -62,5 +62,4 @@ class SendNewsletterCommand extends Command
 
         return Command::SUCCESS;
     }
-
 }

@@ -10,7 +10,6 @@ use App\Entity\User;
 use App\Exception\UserAlreadyExistsException;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 
 class UserManager

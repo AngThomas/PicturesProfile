@@ -59,7 +59,4 @@ class ExceptionDTO implements JmsSerializable
 
         return $this;
     }
-
-
 }
-

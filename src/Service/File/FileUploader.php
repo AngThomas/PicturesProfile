@@ -22,8 +22,10 @@ class FileUploader
 
     /**
      * @param UploadedFile[] $files
-     * @throws \InvalidArgumentException
+     *
      * @return File[]
+     *
+     * @throws \InvalidArgumentException
      */
     public function uploadFiles(array $files, string $targetDir): array
     {

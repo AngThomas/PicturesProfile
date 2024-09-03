@@ -2,14 +2,13 @@
 
 namespace App\EventListener;
 
-use App\Interface\ExceptionHandlerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
     private iterable $exceptionHandlers;
+
     public function __construct(iterable $exceptionHandlers)
     {
         $this->exceptionHandlers = $exceptionHandlers;
@@ -30,6 +29,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
             if (in_array($exceptionClass, $exceptionHandler->getSupportedExceptions($exception))) {
                 $response = $exceptionHandler->handle($event->getThrowable());
                 $event->setResponse($response);
+
                 return;
             }
         }

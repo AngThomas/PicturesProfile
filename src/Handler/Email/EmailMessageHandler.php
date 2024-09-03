@@ -33,9 +33,8 @@ class EmailMessageHandler
 
         try {
             $this->mailer->send($email);
-        } catch(Throwable $throwable) {
+        } catch (Throwable $throwable) {
             throw new RuntimeException('Email could not be send.', 500);
         }
-
     }
 }
