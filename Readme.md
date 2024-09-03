@@ -6,6 +6,7 @@ SendNewsletterCommand has to launched with parameters, I tested it with crontab 
 
 
 0 18 * * * /Applications/MAMP/bin/php/php8.0.3/bin/php /Applications/MAMP/htdocs/CobTask/bin/console SendNewsletter "Cobbleweb" "Your best newsletter" "Message: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id interdum nibh. Phasellus blandit tortor in cursus convallis. Praesent et tellus fermentum, pellentesque lectus at, tincidunt risus. Quisque in nisl malesuada, aliquet nibh at, molestie libero.">> /Applications/MAMP/htdocs/CobTask/var/log/send_newsletter.log 2>&1
+
 0 18 * * * /Applications/MAMP/bin/php/php8.0.3/bin/php /Applications/MAMP/htdocs/CobTask/bin/console messenger:consume async --time-limit=60 >> /Applications/MAMP/htdocs/CobTask/var/log/messenger_consume.log 2>&1
 
 
