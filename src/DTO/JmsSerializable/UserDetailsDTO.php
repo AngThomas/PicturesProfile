@@ -7,31 +7,31 @@ use JMS\Serializer\Annotation as Serializer;
 
 class UserDetailsDTO implements JmsSerializable
 {
+    #[Serializer\Since(0.1)]
     private string $email;
+    #[Serializer\Since(0.1)]
     private string $firstName;
+    #[Serializer\Since(0.1)]
     private string $lastName;
+    #[Serializer\Since(0.1)]
     private string $fullName;
+    #[Serializer\Since(0.1)]
     private bool $active;
+    #[Serializer\Since(0.1)]
     private string $avatar;
+    #[Serializer\Since(0.1)]
     private array $photos;
 
     /**
      * @param PhotoDetailsDTO[] $photos
      */
     public function __construct(
-        #[Serializer\Since(0.1)]
         string $email,
-        #[Serializer\Since(0.1)]
         string $firstName,
-        #[Serializer\Since(0.1)]
         string $lastName,
-        #[Serializer\Since(0.1)]
         string $fullName,
-        #[Serializer\Since(0.1)]
         bool $active,
-        #[Serializer\Since(0.1)]
         string $avatar,
-        #[Serializer\Since(0.1)]
         array $photos,
     ) {
         $this->email = $email;

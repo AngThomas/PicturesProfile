@@ -10,13 +10,13 @@ class RegistrationStatusDTO implements JmsSerializable
     public const SUCCESS = 'User registered successfully!';
     public const FAIL = 'Failed to register a user.';
 
+    #[Serializer\Since(0.1)]
     private bool $success;
+    #[Serializer\Since(0.1)]
     private string $description;
 
     public function __construct(
-        #[Serializer\Since(0.1)]
         bool $success,
-        #[Serializer\Since(0.1)]
         string $description,
     ) {
         $this->success = $success;

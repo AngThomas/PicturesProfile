@@ -8,13 +8,13 @@ use JMS\Serializer\Annotation as Serializer;
 
 class PhotoDetailsDTO implements JmsSerializable
 {
+    #[Serializer\Since(0.1)]
     private string $name;
+    #[Serializer\Since(0.1)]
     private string $url;
 
     public function __construct(
-        #[Serializer\Since(0.1)]
         string $name,
-        #[Serializer\Since(0.1)]
         string $url,
     ) {
         $this->name = $name;
@@ -43,6 +43,7 @@ class PhotoDetailsDTO implements JmsSerializable
 
     /**
      * @param Photo $photos
+     *
      * @return PhotoDetailsDTO[]
      */
     public static function convertToModels(array $photos): array

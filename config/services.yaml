@@ -25,3 +25,19 @@ services:
             $validationRulesPath:
                 '%kernel.project_dir%/config/custom/validationRules.yaml'
 
+
+
+    App\Handler\Exception\ValidationExceptionHandler:
+        tags:
+            - { name: 'exception_handler' }
+
+    App\Handler\Exception\UserExceptionHandler:
+        tags:
+            - { name: 'exception_handler' }
+            -
+    App\EventListener\ExceptionSubscriber:
+        arguments:
+            $exceptionHandlers: !tagged_iterator 'exception_handler'
+        tags:
+            - { name: 'kernel.event_subscriber' }
+

@@ -7,7 +7,9 @@ use App\DTO\JmsSerializable\UserDetailsDTO;
 use App\DTO\UserDTO;
 use App\Entity\Photo;
 use App\Entity\User;
+use App\Exception\UserAlreadyExistsException;
 use App\Repository\UserRepository;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 
@@ -28,7 +30,7 @@ class UserManager
     {
         $photoEntities = [];
         if ($this->userRepository->findOneBy(['email' => $userDTO->getEmail()])) {
-            throw new CustomUserMessageAccountStatusException('User already exists');
+            throw new UserAlreadyExistsException('User already exists', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $user = new User(
@@ -55,8 +57,8 @@ class UserManager
     public function getUserDetails(string $identifier): UserDetailsDTO
     {
         $user = $this->userRepository->findOneBy(['email' => $identifier]);
-        if(!isset($user)) {
-            throw new UserNotFoundException('User has not been found.');
+        if (!isset($user)) {
+            throw new UserNotFoundException('User has not been found.', Response::HTTP_NOT_FOUND);
         }
         $photos = $user->getPhotos()->toArray();
         $modelPhotos = [];
@@ -74,5 +76,4 @@ class UserManager
             $modelPhotos
         );
     }
-
 }

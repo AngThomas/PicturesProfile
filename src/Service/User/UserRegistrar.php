@@ -26,11 +26,13 @@ class UserRegistrar implements UserRegistrarInterface
         UserPhotoManager $userPhotoManager,
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
+        ValidationService $validationService,
     ) {
         $this->userManager = $userManager;
         $this->userPhotoManager = $userPhotoManager;
         $this->passwordHasher = $passwordHasher;
         $this->entityManager = $entityManager;
+        $this->validationService = $validationService;
     }
 
     /**
