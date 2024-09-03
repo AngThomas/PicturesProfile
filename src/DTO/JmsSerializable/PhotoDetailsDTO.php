@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Model;
+namespace App\DTO\JmsSerializable;
 
 use App\Entity\Photo;
+use App\Interface\JmsSerializable;
 use JMS\Serializer\Annotation as Serializer;
 
-class PhotoDetails
+class PhotoDetailsDTO implements JmsSerializable
 {
     private string $name;
     private string $url;
@@ -42,7 +43,7 @@ class PhotoDetails
 
     /**
      * @param Photo $photos
-     * @return PhotoDetails[]
+     * @return PhotoDetailsDTO[]
      */
     public static function convertToModels(array $photos): array
     {

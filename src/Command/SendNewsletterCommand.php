@@ -2,11 +2,12 @@
 
 namespace App\Command;
 
-use App\Model\EmailMessage;
+use App\Model\Email\EmailData;
 use App\Repository\UserRepository;
-use App\Service\EmailSender;
+use App\Service\EmailDispatcher;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -16,31 +17,48 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class SendNewsletterCommand extends Command
 {
-    private EmailSender $emailSender;
+    private EmailDispatcher $emailDispatcher;
     private UserRepository $userRepository;
-    private const BATCH_SIZE = 500;
 
     public function __construct(
-        EmailSender $emailSender,
-        UserRepository $userRepository,
+        EmailDispatcher $emailDispatcher,
+        UserRepository  $userRepository,
     ) {
         parent::__construct();
-        $this->emailSender = $emailSender;
+        $this->emailDispatcher = $emailDispatcher;
         $this->userRepository = $userRepository;
+    }
+
+    protected function configure(): void
+    {
+        $this
+            ->addArgument('sender', InputArgument::REQUIRED, 'Email address of the sender.')
+            ->addArgument('subject', InputArgument::REQUIRED, 'Subject of the newsletter.')
+            ->addArgument('body', InputArgument::REQUIRED, 'Body of the newsletter.')
+            ->addArgument('batchSize', InputArgument::OPTIONAL, 'Number of users to process per batch.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $subject = 'Your best newsletter';
-        $messageBody = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id interdum nibh. Phasellus blandit tortor in cursus convallis. Praesent et tellus fermentum, pellentesque lectus at, tincidunt risus. Quisque in nisl malesuada, aliquet nibh at, molestie libero.';
-
+        $sender = $input->getArgument('sender');
+        $subject = $input->getArgument('subject');
+        $body = $input->getArgument('body');
+        $batchSize = null !== $input->getArgument('batchSize') ? (int) $input->getArgument('batchSize') : 100;
         $page = 1;
 
         do {
-            $newActiveUsers = $this->userRepository->findActiveUsersByDate(new \DateTimeImmutable(), $page, self::BATCH_SIZE);
-            $this->emailSender->sendEmailsInBatch(array_column($newActiveUsers, 'email'), 'no-reply@cobbleweb.com', $subject, $messageBody, self::BATCH_SIZE);
+            $newActiveUsers = $this->userRepository->findActiveUsersByDate(new \DateTimeImmutable(), $page, $batchSize);
+
+            $emailMessages = (new EmailData(
+                $sender,
+                array_column($newActiveUsers, 'email'),
+                $subject,
+                $body
+            ))->createEmailMessages();
+
+            $this->emailDispatcher->dispatchMulti($emailMessages);
             ++$page;
-        } while (self::BATCH_SIZE === count($newActiveUsers));
+        } while ($batchSize === count($newActiveUsers));
 
         return Command::SUCCESS;
     }

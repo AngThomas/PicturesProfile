@@ -2,11 +2,10 @@
 
 namespace App\Handler\Email;
 
-use App\Model\EmailMessage;
+use App\Model\Email\EmailMessage;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Mime\Email;
 
 #[AsMessageHandler]

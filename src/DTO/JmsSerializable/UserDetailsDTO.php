@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Model;
+namespace App\DTO\JmsSerializable;
 
+use App\Interface\JmsSerializable;
 use JMS\Serializer\Annotation as Serializer;
 
-class UserDetails
+class UserDetailsDTO implements JmsSerializable
 {
     private string $email;
     private string $firstName;
@@ -15,7 +16,7 @@ class UserDetails
     private array $photos;
 
     /**
-     * @param PhotoDetails[] $photos
+     * @param PhotoDetailsDTO[] $photos
      */
     public function __construct(
         #[Serializer\Since(0.1)]

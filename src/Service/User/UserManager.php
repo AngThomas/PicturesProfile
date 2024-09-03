@@ -2,14 +2,14 @@
 
 namespace App\Service\User;
 
+use App\DTO\JmsSerializable\PhotoDetailsDTO;
+use App\DTO\JmsSerializable\UserDetailsDTO;
 use App\DTO\UserDTO;
 use App\Entity\Photo;
 use App\Entity\User;
-use App\Model\PhotoDetails;
-use App\Model\UserDetails;
 use App\Repository\UserRepository;
-use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 
 class UserManager
 {
@@ -52,15 +52,19 @@ class UserManager
         return $user;
     }
 
-    public function getUserDetails(User $user): UserDetails
+    public function getUserDetails(string $identifier): UserDetailsDTO
     {
+        $user = $this->userRepository->findOneBy(['email' => $identifier]);
+        if(!isset($user)) {
+            throw new UserNotFoundException('User has not been found.');
+        }
         $photos = $user->getPhotos()->toArray();
         $modelPhotos = [];
         if (!empty($photos)) {
-            $modelPhotos = PhotoDetails::convertToModels($photos);
+            $modelPhotos = PhotoDetailsDTO::convertToModels($photos);
         }
 
-        return new UserDetails(
+        return new UserDetailsDTO(
             $user->getEmail(),
             $user->getFirstName(),
             $user->getLastName(),

@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use App\Model\PhotoDetails;
+use App\DTO\JmsSerializable\PhotoDetailsDTO;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -119,14 +119,14 @@ class UserDTO
     }
 
     /**
-     * @return PhotoDetails[] $photos
+     * @return PhotoDetailsDTO[] $photos
      */
     public function getPhotos(): array
     {
         return $this->photos;
     }
 
-    public function addPhoto(PhotoDetails $photo)
+    public function addPhoto(PhotoDetailsDTO $photo)
     {
         $this->photos[] = $photo;
     }

@@ -6,16 +6,20 @@ use App\Exception\ValidationException;
 use App\Service\ValidationService;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Yaml\Yaml;
 
 
 class FileValidator
 {
     private ValidationService $validationService;
+    private array $rules;
 
     public function __construct(
         ValidationService $validationService,
+        $validationRulesPath
     ) {
         $this->validationService = $validationService;
+        $this->rules = Yaml::parseFile($validationRulesPath)['file_validation'];
     }
 
     /**
@@ -24,12 +28,9 @@ class FileValidator
     public function validate(UploadedFile $file): void
     {
         $this->validationService->validate($file, [
-            new Assert\File([
-                'maxSize' => '2M',
-                'maxSizeMessage' => 'Maximum size allowed (2MB per file) exceeded.',
-                'mimeTypes' => ['image/jpeg', 'image/png'],
-                'mimeTypesMessage' => 'Please upload a valid JPEG or PNG file.',
-            ]),
+            new Assert\File(
+                $this->rules
+            ),
         ]);
     }
 }

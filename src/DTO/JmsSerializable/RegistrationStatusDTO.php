@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Model;
+namespace App\DTO\JmsSerializable;
 
+use App\Interface\JmsSerializable;
 use JMS\Serializer\Annotation as Serializer;
 
-class RegistrationStatus
+class RegistrationStatusDTO implements JmsSerializable
 {
     public const SUCCESS = 'User registered successfully!';
     public const FAIL = 'Failed to register a user.';

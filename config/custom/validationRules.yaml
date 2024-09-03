@@ -1,0 +1,7 @@
+file_validation:
+  maxSize: 2M
+  maxSizeMessage: 'Maximum size allowed (2MB per file) exceeded.'
+  mimeTypes:
+    - 'image/jpeg'
+    - 'image/png'
+  mimeTypesMessage: 'Please upload a valid JPEG or PNG file.'
