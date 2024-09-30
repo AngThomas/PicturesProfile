@@ -46,7 +46,7 @@ class UserPhotoManager
         $this->setSavePath();
 
         foreach ($files as $index => $file) {
-            if ('avatar' === $file->getClientOriginalName()) {
+            if ('avatar.jpg' === $file->getClientOriginalName()) {
                 $avatarPhoto = $this->uploadAvatar($file);
                 $photoDetails[] = $avatarPhoto;
                 $userDto->setAvatar($avatarPhoto->getUrl());
