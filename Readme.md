@@ -1,72 +1,10 @@
-Hello!
+Simple project based on Symfony 5.4 allowing to register user with pictures upload.
 
-As it is private repo with a task only, I uploaded private and public keys for JWT along with JWT_PASSPHRASE stored in secrets.
+/api/users/register POST
+allows to register user 
 
-Endpoint name are as in task description
+/api/users/login POST 
+allows to login registered user, gives jwt in response
 
-SendNewsletterCommand has to launched with parameters, I tested it with crontab and mailhog, it works as intended:
-
-
-0 18 * * * /Applications/MAMP/bin/php/php8.0.3/bin/php /Applications/MAMP/htdocs/CobTask/bin/console SendNewsletter "Cobbleweb" "Your best newsletter" "Message: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id interdum nibh. Phasellus blandit tortor in cursus convallis. Praesent et tellus fermentum, pellentesque lectus at, tincidunt risus. Quisque in nisl malesuada, aliquet nibh at, molestie libero.">> /Applications/MAMP/htdocs/CobTask/var/log/send_newsletter.log 2>&1
-
-0 18 * * * /Applications/MAMP/bin/php/php8.0.3/bin/php /Applications/MAMP/htdocs/CobTask/bin/console messenger:consume async --time-limit=60 >> /Applications/MAMP/htdocs/CobTask/var/log/messenger_consume.log 2>&1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/api/users/me GET
+allows to retrieve user details (need to have jwt in Authorization header)
